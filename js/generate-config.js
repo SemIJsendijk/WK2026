@@ -3,11 +3,8 @@ const fs = require('fs');
 
 // The content of the config file, using the environment variables
 const configContent = `
-const config = {
-    SUPABASE_URL: "${process.env.SUPABASE_URL}",
-    SUPABASE_ANON_KEY: "${process.env.SUPABASE_ANON_KEY}"
-};
-export default config;
+export const SUPABASE_URL = "${process.env.SUPABASE_URL}";
+export const SUPABASE_ANON_KEY = "${process.env.SUPABASE_ANON_KEY}";
 `;
 
 // Write the file to the correct location

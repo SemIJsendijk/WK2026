@@ -55,6 +55,7 @@ if (form) {
 
         // Basic validation
         if (!email || !password) {
+            console.log('Login unsuccessful');
             if (msg) {
                 msg.style.color = 'red';
                 msg.textContent = 'Please provide both email and password.';
@@ -75,6 +76,7 @@ if (form) {
 
             if (error || !data) {
                 console.error('Login failed:', error);
+                console.log('Login unsuccessful');
                 if (msg) {
                     msg.style.color = 'red';
                     msg.textContent = `Email of wachtwoord is incorrect. Debug: ${error?.message || 'no details'}`;
@@ -87,12 +89,15 @@ if (form) {
                 msg.textContent = 'Succesvol ingelogd';
             }
 
+            console.log('Login successful');
+
             // Save user and redirect
             localStorage.setItem('currentUser', JSON.stringify(data));
             setTimeout(() => { window.location.href = '../html/home.html'; }, 700);
 
         } catch (err) {
             console.error('Unexpected error:', err);
+            console.log('Login unsuccessful');
             if (msg) {
                 msg.style.color = 'red';
                 msg.textContent = `Er is een fout opgetreden: ${err?.message || String(err)}`;

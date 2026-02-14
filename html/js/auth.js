@@ -14,7 +14,7 @@ const msg = document.getElementById('login-message');
 async function loadConfig() {
     try {
         // dynamic import so the file can be gitignored and absent in the repo
-        const cfg = await import('./config.js');
+        const cfg = await import('config.js');
         if (!cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY) {
             throw new Error('Invalid config');
         }
@@ -93,7 +93,7 @@ if (form) {
 
             // Save user and redirect
             localStorage.setItem('currentUser', JSON.stringify(data));
-            setTimeout(() => { window.location.href = '../html/home.html'; }, 700);
+            setTimeout(() => { window.location.href = '../home.html'; }, 700);
 
         } catch (err) {
             console.error('Unexpected error:', err);

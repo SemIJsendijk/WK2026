@@ -1,5 +1,5 @@
 # Local Supabase client config (contains sensitive anon key)
-js/config.js
+html/js/config.js
 
 # Node modules, OS files, editor settings
 node_modules/

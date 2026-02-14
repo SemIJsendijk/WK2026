@@ -39,6 +39,22 @@ async function ensureClient() {
     return supabase;
 }
 
+// Helper: query the `users` table for a given email
+async function getUserByEmail(email) {
+    await ensureClient();
+    try {
+        const { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('email', email)
+            .limit(1)
+            .single();
+        return { data, error };
+    } catch (err) {
+        return { data: null, error: err };
+    }
+}
+
 // 3. Handle Login Form Submission
 if (form) {
     form.addEventListener('submit', async (ev) => {
@@ -66,20 +82,42 @@ if (form) {
         try {
             await ensureClient();
 
-            // Call the custom 'login_user' database function (RPC) which verifies credentials server-side
-            const { data, error } = await supabase.rpc('login_user', {
-                login_email: email,
-                login_password: password,
-            });
+            // Prefer the custom 'login_user' RPC for server-side verification
+            let rpcData = null;
+            let rpcError = null;
+            try {
+                const res = await supabase.rpc('login_user', {
+                    login_email: email,
+                    login_password: password,
+                });
+                rpcData = res.data;
+                rpcError = res.error;
+            } catch (e) {
+                rpcData = null;
+                rpcError = e;
+            }
 
-            console.debug('Supabase RPC login_user result:', { data, error });
+            console.debug('Supabase RPC login_user result:', { data: rpcData, error: rpcError });
 
-            if (error || !data) {
-                console.error('Login failed:', error);
-                console.log('Login unsuccessful');
+            if (rpcError || !rpcData) {
+                // Fallback: check whether a user row exists in the `users` table
+                const { data: userRow, error: userErr } = await getUserByEmail(email);
+                console.debug('Fallback users query result:', { userRow, userErr });
+
+                if (userErr || !userRow) {
+                    console.error('Login failed (RPC + no user):', rpcError || userErr);
+                    if (msg) {
+                        msg.style.color = 'red';
+                        msg.textContent = 'Email of wachtwoord is incorrect.';
+                    }
+                    return;
+                }
+
+                // User exists but RPC authentication failed. Don't verify password client-side.
+                console.warn('User exists but RPC login failed; server-side verification required.');
                 if (msg) {
-                    msg.style.color = 'red';
-                    msg.textContent = `Email of wachtwoord is incorrect. Debug: ${error?.message || 'no details'}`;
+                    msg.style.color = 'orange';
+                    msg.textContent = 'Gebruiker gevonden, maar inloggen mislukt (server verificatie). Neem contact op met de beheerder.';
                 }
                 return;
             }

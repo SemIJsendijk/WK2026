@@ -10,6 +10,11 @@ let supabase;
 const form = document.getElementById('login-form');
 const msg = document.getElementById('login-message');
 
+// Voeg dit toe bovenaan in auth.js
+if (localStorage.getItem('currentUser')) {
+    window.location.href = './home.html';
+}
+
 // 1. Load Configuration
 async function loadConfig() {
     try {
@@ -63,6 +68,7 @@ if (form) {
         // Reset message state
         if (msg) {
             msg.style.color = 'black';
+            msg.style.fontWeight = 'bold';
             msg.textContent = 'Logging in...';
         }
 
@@ -136,5 +142,13 @@ if (form) {
                 msg.textContent = `Er is een fout opgetreden: ${err?.message || String(err)}`;
             }
         }
+    });
+}
+
+// Navigatie naar de Change Password pagina
+const changePwBtn = document.querySelector('.change-password-btn');
+if (changePwBtn) {
+    changePwBtn.addEventListener('click', () => {
+        window.location.href = './change-password.html';
     });
 }

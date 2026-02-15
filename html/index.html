@@ -3,34 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
+    <title>Sluurmans' WK 2026 Poule - Login</title>
     <link rel="stylesheet" href="./css/index.css">
+    <style>
+        /* Aanvullende styles voor de nieuwe structuur */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        header {
+            flex: 1; /* Neemt de ruimte van de login-sectie in */
+        }
+        footer {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            text-align: center;
+            border-top: 1px solid #ddd;
+            font-size: 0.9rem;
+            color: #555;
+        }
+        .main-content {
+            display: flex;
+            flex: 1;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <div class="login-section">
+    <div class="main-content">
+        <header class="login-section">
             <div class="login-box">
                 <h2>Login</h2>
                 <form id="login-form">
                     <div id="login-message" aria-live="polite" style="min-height:1.4em;margin-bottom:0.5rem"></div>
+                    
                     <div class="form-group">
                         <label for="email">Email</label>
                         <input type="email" id="email" name="email" required>
                     </div>
                     <div class="form-group">
-                        <label for="password">Password</label>
+                        <label for="password">Wachtwoord</label>
                         <input type="password" id="password" name="password" required>
                     </div>
                     <button type="submit" class="login-btn">Login</button>
-                    <button type="button" class="change-password-btn">Change Password</button>
+                    <button type="button" class="change-password-btn">Wachtwoord Wijzigen</button>
                 </form>
             </div>
-        </div>
+        </header>
+
         <div class="image-section">
-            <div class="image-text">Sluurmans' WK 2026 Poule</div>
+            <div class="image-text">&copy; Sluurmans' WK 2026 Poule</div>
         </div>
     </div>
+
+    <footer>
+        <div id="footer-message">
+            Sem IJsendijk gaat winnen!&#128293;&#128293;&#128293;
+        </div>
+    </footer>
+
     <script type="module" src="./js/auth.js"></script>
 </body>
 </html>
-

@@ -3,6 +3,12 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 let supabase;
 
+// Check of de gebruiker is opgeslagen in localStorage
+if (!localStorage.getItem('currentUser')) {
+    // Geen gebruiker gevonden? Stuur ze direct terug naar de loginpagina
+    window.location.href = './index.html';
+}
+
 // 1. Laden van configuratie (net als in auth.js)
 async function loadConfig() {
     try {

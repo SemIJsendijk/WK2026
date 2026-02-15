@@ -62,22 +62,13 @@ if (form) {
 
         // Reset message state
         if (msg) {
-            msg.style.color = '';
+            msg.style.color = 'black';
             msg.textContent = 'Logging in...';
         }
 
         const email = form.email?.value?.trim();
         const password = form.password?.value;
 
-        // Basic validation
-        if (!email || !password) {
-            console.log('Login unsuccessful');
-            if (msg) {
-                msg.style.color = 'red';
-                msg.textContent = 'Please provide both email and password.';
-            }
-            return;
-        }
 
         try {
             await ensureClient();
@@ -108,6 +99,7 @@ if (form) {
                     console.error('Login failed (RPC + no user):', rpcError || userErr);
                     if (msg) {
                         msg.style.color = 'red';
+                        msg.style.fontWeight = 'bold';
                         msg.textContent = 'Email of wachtwoord is incorrect.';
                     }
                     return;
@@ -117,6 +109,7 @@ if (form) {
                 console.warn('User exists but RPC login failed; server-side verification required.');
                 if (msg) {
                     msg.style.color = 'orange';
+                    msg.style.fontWeight = 'bold';
                     msg.textContent = 'Gebruiker gevonden, maar inloggen mislukt (server verificatie). Neem contact op met de beheerder.';
                 }
                 return;
@@ -124,6 +117,7 @@ if (form) {
 
             if (msg) {
                 msg.style.color = 'green';
+                msg.style.fontWeight = 'bold';
                 msg.textContent = 'Succesvol ingelogd';
             }
 
@@ -138,6 +132,7 @@ if (form) {
             console.log('Login unsuccessful');
             if (msg) {
                 msg.style.color = 'red';
+                msg.style.fontWeight = 'bold';
                 msg.textContent = `Er is een fout opgetreden: ${err?.message || String(err)}`;
             }
         }

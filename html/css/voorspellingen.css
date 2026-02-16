@@ -1,0 +1,41 @@
+:root {
+    --primary: #00ff87;
+    --bg: #0d1117;
+    --card: #161b22;
+    --gray: #30363d;
+    --text: #c9d1d9;
+}
+
+body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+header { background: var(--card); padding: 30px 0; border-bottom: 2px solid var(--primary); margin-bottom: 30px; }
+.status-bar { font-size: 0.9rem; color: var(--primary); margin-top: 10px; }
+
+.tabs { display: flex; gap: 10px; margin-bottom: 30px; }
+.tab-btn { background: var(--card); border: 1px solid var(--gray); color: white; padding: 12px 24px; cursor: pointer; border-radius: 8px; font-weight: bold; }
+.tab-btn.active { background: var(--primary); color: black; border-color: var(--primary); }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.group-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
+.group-card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid var(--gray); }
+.group-card h3 { color: var(--primary); margin-top: 0; border-bottom: 1px solid var(--gray); padding-bottom: 10px; }
+
+.match { display: flex; align-items: center; justify-content: space-between; margin: 12px 0; }
+.team { width: 38%; font-weight: 500; }
+.text-right { text-align: right; }
+
+.inputs { display: flex; gap: 4px; }
+input[type="number"] { width: 35px; height: 30px; background: var(--bg); border: 1px solid var(--gray); color: white; text-align: center; border-radius: 4px; }
+input[type="number"]:focus { border-color: var(--primary); outline: none; }
+
+.ko-table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; }
+.ko-table th { background: var(--gray); padding: 15px; text-align: center; }
+.ko-table td { padding: 12px; border-bottom: 1px solid var(--gray); text-align: center; }
+.land-name { text-align: left; font-weight: bold; padding-left: 20px !important; }
+
+.save-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--card); padding: 20px 0; border-top: 1px solid var(--primary); text-align: center; }
+#save-btn { background: var(--primary); color: black; border: none; padding: 14px 50px; font-size: 1.1rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: transform 0.2s; }
+#save-btn:hover { transform: scale(1.05); }

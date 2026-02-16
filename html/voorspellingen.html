@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WK 2026 Voorspellingen</title>
+    <link rel="stylesheet" href="./voorspellingen.css">
+</head>
+<body>
+
+<header>
+    <div class="container">
+        <h1>WK 2026 Voorspellingen</h1>
+        <p>Vul je scores in en voorspel het verloop van het toernooi</p>
+    </div>
+</header>
+
+<main class="container">
+    <div class="tabs">
+        <button class="tab-btn active" onclick="openTab('poulfase')">Poulfase</button>
+        <button class="tab-btn" onclick="openTab('knockout')">Eindtoernooi</button>
+    </div>
+
+    <form id="predictionForm">
+        <section id="poulfase" class="tab-content active">
+            <h2>Groepswedstrijden</h2>
+            
+            <div class="group-container">
+                <div class="group-card">
+                    <h3>Groep A</h3>
+                    <div class="match">
+                        <span class="team-name">Mexico</span>
+                        <input type="number" name="m_49_50_home" min="0" placeholder="0">
+                        <span class="divider">-</span>
+                        <input type="number" name="m_49_50_away" min="0" placeholder="0">
+                        <span class="team-name">Zuid-Afrika</span>
+                    </div>
+                    <div class="match">
+                        <span class="team-name">Zuid-Korea</span>
+                        <input type="number" name="m_51_52_home" min="0" placeholder="0">
+                        <span class="divider">-</span>
+                        <input type="number" name="m_51_52_away" min="0" placeholder="0">
+                        <span class="team-name">Play-off D</span>
+                    </div>
+                    </div>
+
+                </div>
+        </section>
+
+        <section id="knockout" class="tab-content">
+            <h2>Wie haalt welke ronde?</h2>
+            <div class="table-responsive">
+                <table class="country-table">
+                    <thead>
+                        <tr>
+                            <th>Land</th>
+                            <th>32</th>
+                            <th>16</th>
+                            <th>KF</th>
+                            <th>HF</th>
+                            <th>F</th>
+                            <th>🏆</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="land-label">Nederland</td>
+                            <td><input type="checkbox" name="l_69_32"></td>
+                            <td><input type="checkbox" name="l_69_16"></td>
+                            <td><input type="checkbox" name="l_69_kf"></td>
+                            <td><input type="checkbox" name="l_69_hf"></td>
+                            <td><input type="checkbox" name="l_69_f"></td>
+                            <td><input type="radio" name="winnaar" value="69"></td>
+                        </tr>
+                        </tbody>
+                </table>
+            </div>
+        </section>
+
+        <div class="sticky-footer">
+            <button type="submit" class="save-btn">Voorspellingen Opslaan</button>
+        </div>
+    </form>
+</main>
+
+<script>
+    function openTab(tabName) {
+        const contents = document.querySelectorAll('.tab-content');
+        const buttons = document.querySelectorAll('.tab-btn');
+        
+        contents.forEach(content => content.classList.remove('active'));
+        buttons.forEach(btn => btn.classList.remove('active'));
+        
+        document.getElementById(tabName).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+</script>
+
+</body>
+</html>

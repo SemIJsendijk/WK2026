@@ -1,41 +1,185 @@
 :root {
-    --primary: #00ff87;
+    --primary: #00ff87; /* FIFA Green */
+    --secondary: #38003c; /* Deep Purple */
     --bg: #0d1117;
-    --card: #161b22;
-    --gray: #30363d;
-    --text: #c9d1d9;
+    --card-bg: #161b22;
+    --border: #30363d;
+    --text-main: #e6edf3;
+    --text-dim: #8b949e;
+    --white: #ffffff;
 }
 
-body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; }
-.container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+* { box-sizing: border-box; }
 
-header { background: var(--card); padding: 30px 0; border-bottom: 2px solid var(--primary); margin-bottom: 30px; }
-.status-bar { font-size: 0.9rem; color: var(--primary); margin-top: 10px; }
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg);
+    color: var(--text-main);
+    margin: 0;
+    line-height: 1.5;
+    padding-bottom: 100px; /* Ruimte voor de sticky save bar */
+}
 
-.tabs { display: flex; gap: 10px; margin-bottom: 30px; }
-.tab-btn { background: var(--card); border: 1px solid var(--gray); color: white; padding: 12px 24px; cursor: pointer; border-radius: 8px; font-weight: bold; }
-.tab-btn.active { background: var(--primary); color: black; border-color: var(--primary); }
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
 
-.tab-content { display: none; }
-.tab-content.active { display: block; }
+/* Header & Nav */
+header {
+    background: var(--card-bg);
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+}
 
-.group-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
-.group-card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid var(--gray); }
-.group-card h3 { color: var(--primary); margin-top: 0; border-bottom: 1px solid var(--gray); padding-bottom: 10px; }
+.header-flex { display: flex; justify-content: space-between; align-items: center; }
 
-.match { display: flex; align-items: center; justify-content: space-between; margin: 12px 0; }
-.team { width: 38%; font-weight: 500; }
+h1 { margin: 0; font-size: 1.5rem; color: var(--white); }
+h1 span { color: var(--primary); }
+
+.auth-pill {
+    background: var(--border);
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+}
+
+.tab-nav {
+    background: var(--card-bg);
+    padding: 10px 0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-bottom: 1px solid var(--border);
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    padding: 10px 20px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    border-bottom: 2px solid transparent;
+}
+
+.tab-btn.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+/* Grid & Cards */
+.group-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.group-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.group-card h3 {
+    margin: 0 0 15px 0;
+    font-size: 1.2rem;
+    color: var(--primary);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+}
+
+/* Match Row */
+.match {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+}
+
+.team { width: 35%; font-size: 0.95rem; }
 .text-right { text-align: right; }
 
-.inputs { display: flex; gap: 4px; }
-input[type="number"] { width: 35px; height: 30px; background: var(--bg); border: 1px solid var(--gray); color: white; text-align: center; border-radius: 4px; }
-input[type="number"]:focus { border-color: var(--primary); outline: none; }
+.inputs {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
 
-.ko-table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; }
-.ko-table th { background: var(--gray); padding: 15px; text-align: center; }
-.ko-table td { padding: 12px; border-bottom: 1px solid var(--gray); text-align: center; }
-.land-name { text-align: left; font-weight: bold; padding-left: 20px !important; }
+input[type="number"] {
+    width: 40px;
+    height: 32px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--white);
+    text-align: center;
+    border-radius: 6px;
+    font-weight: bold;
+}
 
-.save-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--card); padding: 20px 0; border-top: 1px solid var(--primary); text-align: center; }
-#save-btn { background: var(--primary); color: black; border: none; padding: 14px 50px; font-size: 1.1rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: transform 0.2s; }
-#save-btn:hover { transform: scale(1.05); }
+input:focus { border-color: var(--primary); outline: none; }
+
+/* Table styles */
+.table-card { margin-top: 30px; overflow-x: auto; }
+
+.ko-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card-bg);
+    border-radius: 12px;
+}
+
+.ko-table th, .ko-table td {
+    padding: 12px 15px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+}
+
+.text-left { text-align: left !important; }
+
+input[type="checkbox"], input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+
+/* Sticky Save Bar */
+.save-bar {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: var(--card-bg);
+    border-top: 2px solid var(--primary);
+    padding: 15px 0;
+    box-shadow: 0 -10px 20px rgba(0,0,0,0.5);
+}
+
+.save-flex { display: flex; justify-content: space-between; align-items: center; }
+
+.btn-save {
+    background: var(--primary);
+    color: var(--secondary);
+    border: none;
+    padding: 12px 30px;
+    font-weight: 800;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: transform 0.1s;
+}
+
+.btn-save:active { transform: scale(0.95); }
+
+.save-msg { font-size: 0.9rem; color: var(--text-dim); margin: 0; }
+
+/* Mobile optimization */
+@media (max-width: 600px) {
+    .save-flex { flex-direction: column; gap: 10px; text-align: center; }
+    .team { font-size: 0.85rem; }
+}

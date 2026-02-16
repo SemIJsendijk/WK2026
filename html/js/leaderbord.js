@@ -4,8 +4,8 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 let supabase;
 
 // Check of de gebruiker is opgeslagen in localStorage
-if (!localStorage.getItem('currentUser')) {
-    // Geen gebruiker gevonden? Stuur ze direct terug naar de loginpagina
+const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+if (!currentUser) {
     window.location.href = './index.html';
 }
 

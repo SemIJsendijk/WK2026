@@ -178,6 +178,16 @@ input[type="checkbox"], input[type="radio"] {
 
 .save-msg { font-size: 0.9rem; color: var(--text-dim); margin: 0; }
 
+/* Verberg content die niet actief is */
+.tab-content {
+    display: none;
+}
+
+/* Toon alleen de actieve tab */
+.tab-content.active {
+    display: block;
+}
+
 /* Mobile optimization */
 @media (max-width: 600px) {
     .save-flex { flex-direction: column; gap: 10px; text-align: center; }

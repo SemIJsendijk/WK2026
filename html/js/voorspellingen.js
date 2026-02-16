@@ -1,56 +1,90 @@
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let supabase;
 
-// Functie om de wedstrijden JSON om te zetten in HTML rijen
+// Auth Guard: Controleer of de gebruiker is ingelogd
+const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+if (!currentUser) {
+    window.location.href = './index.html';
+}
+
+async function loadConfig() {
+    try {
+        const cfg = await import('./config.js');
+        return { url: cfg.SUPABASE_URL, key: cfg.SUPABASE_ANON_KEY };
+    } catch (err) {
+        console.error("Configuratie niet gevonden.");
+        return null;
+    }
+}
+
+async function ensureClient() {
+    if (supabase) return supabase;
+    const cfg = await loadConfig();
+    if (!cfg) throw new Error('Missing Supabase config');
+    supabase = createClient(cfg.url, cfg.key);
+    return supabase;
+}
+
+// Tab-navigatie functie
+window.showTab = function(tabName) {
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    
+    const section = document.getElementById(`${tabName}-section`);
+    if (section) section.classList.add('active');
+    
+    const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => 
+        btn.getAttribute('onclick')?.includes(tabName)
+    );
+    if (activeBtn) activeBtn.classList.add('active');
+}
+
 function renderWedstrijden(wedstrijdenJson, bestaandeVoorspellingen) {
     const container = document.getElementById('group-grid');
-    container.innerHTML = ''; // Maak eerst leeg
+    if (!container) return;
+    container.innerHTML = '';
 
-    // Groepeer de JSON per poule
     const groepen = {};
     wedstrijdenJson.forEach(match => {
-        const g = match.home.groep;
+        const g = match.home?.groep || 'Onbekend';
         if (!groepen[g]) groepen[g] = [];
         groepen[g].push(match);
     });
 
-    // Maak voor elke groep een kaart en voor elke match een rij
     Object.keys(groepen).sort().forEach(groepNaam => {
         const kaart = document.createElement('div');
         kaart.className = 'group-card';
-        
         let matchRijenHtml = `<h3>Groep ${groepNaam}</h3>`;
         
         groepen[groepNaam].forEach(m => {
-            // Zoek in de voorspellingen JSON of deze match al is ingevuld
+            // Zoek bestaande voorspelling op basis van match_id
             const v = bestaandeVoorspellingen.find(p => p.match_id === m.match_id) || {};
             
             matchRijenHtml += `
                 <div class="match">
-                    <span class="team">${m.home.land}</span>
+                    <span class="team">${m.home?.land}</span>
                     <div class="inputs">
-                        <input type="number" name="m_${m.match_id}_h" value="${v.goals_home ?? ''}" placeholder="0">
-                        <input type="number" name="m_${m.match_id}_a" value="${v.goals_away ?? ''}" placeholder="0">
+                        <input type="number" name="m_${m.match_id}_h" value="${v.voorspeld_thuis ?? ''}" placeholder="0" min="0">
+                        <input type="number" name="m_${m.match_id}_a" value="${v.voordspeld_uit ?? ''}" placeholder="0" min="0">
                     </div>
-                    <span class="team text-right">${m.away.land}</span>
-                </div>
-            `;
+                    <span class="team text-right">${m.away?.land}</span>
+                </div>`;
         });
-
         kaart.innerHTML = matchRijenHtml;
         container.appendChild(kaart);
     });
 }
 
-// Functie voor de Landen-Booleans JSON
 function renderLandenTabel(landenJson, bestaandeVoorspellingen) {
     const tbody = document.getElementById('ko-body');
+    if (!tbody) return;
     tbody.innerHTML = '';
 
     landenJson.forEach(land => {
         const v = bestaandeVoorspellingen.find(p => p.land_id === land.id) || {};
         
+        // Let op: kwartfinale en halvefinale zijn hier gesplitst voor de UI
         const rij = `
             <tr>
                 <td class="land-name">${land.land}</td>
@@ -60,33 +94,97 @@ function renderLandenTabel(landenJson, bestaandeVoorspellingen) {
                 <td><input type="checkbox" name="l_${land.id}_hf" ${v.halvefinale ? 'checked' : ''}></td>
                 <td><input type="checkbox" name="l_${land.id}_f" ${v.finale ? 'checked' : ''}></td>
                 <td><input type="radio" name="winnaar" value="${land.id}" ${v.winnaar ? 'checked' : ''}></td>
-            </tr>
-        `;
+            </tr>`;
         tbody.insertAdjacentHTML('beforeend', rij);
     });
 }
 
-// Data ophalen en functies aanroepen
-async function laadAlles() {
-    const { data: user } = await _supabase.auth.getUser();
-    const uid = user?.user?.id;
-
-    // Haal de JSON data op uit Supabase
-    const { data: wedstrijden } = await _supabase.from('wedstrijden_poulfase').select('*, home:home_team_id(land, groep), away:away_team_id(land)');
-    const { data: landen } = await _supabase.from('landen').select('*').order('land');
+// Event listener voor het opslaan van het formulier
+document.getElementById('prediction-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const saveMsg = document.getElementById('save-msg');
+    if (saveMsg) saveMsg.textContent = "⌛ Bezig met opslaan...";
     
-    let v_matches = [];
-    let v_toernooi = [];
+    try {
+        await ensureClient();
+        const formData = new FormData(e.target);
+        const matchUpdates = [];
+        const toernooiUpdates = [];
+        const winnerId = formData.get('winnaar');
 
-    if (uid) {
-        const res1 = await _supabase.from('voorspellingen_wedstrijden').select('*').eq('user_id', uid);
-        const res2 = await _supabase.from('voorspellingen_toernooi').select('*').eq('user_id', uid);
-        v_matches = res1.data || [];
-        v_toernooi = res2.data || [];
+        // Verzamel wedstrijd voorspellingen
+        const matchIds = [...new Set([...formData.keys()].filter(k => k.startsWith('m_')).map(k => k.split('_')[1]))];
+        matchIds.forEach(id => {
+            matchUpdates.push({
+                user_id: currentUser.id,
+                match_id: parseInt(id),
+                voorspeld_thuis: formData.get(`m_${id}_h`) !== "" ? parseInt(formData.get(`m_${id}_h`)) : null,
+                voordspeld_uit: formData.get(`m_${id}_a`) !== "" ? parseInt(formData.get(`m_${id}_a`)) : null
+            });
+        });
+
+        // Toernooi voorspellingen (gebruik een aparte tabel bijv. 'voorspellingen_toernooi')
+        const landIds = [...new Set([...formData.keys()].filter(k => k.startsWith('l_')).map(k => k.split('_')[1]))];
+        landIds.forEach(id => {
+            toernooiUpdates.push({
+                user_id: currentUser.id,
+                land_id: parseInt(id),
+                laatste_32: formData.get(`l_${id}_32`) === 'on',
+                laatste_16: formData.get(`l_${id}_16`) === 'on',
+                kwartfinale: formData.get(`l_${id}_kf`) === 'on',
+                halvefinale: formData.get(`l_${id}_hf`) === 'on',
+                finale: formData.get(`l_${id}_f`) === 'on',
+                winnaar: winnerId == id
+            });
+        });
+
+        // Voer de updates uit in Supabase
+        const { error: err1 } = await supabase.from('voorspellingen').upsert(matchUpdates);
+        const { error: err2 } = await supabase.from('voorspellingen_toernooi').upsert(toernooiUpdates);
+
+        if (err1 || err2) throw err1 || err2;
+
+        if (saveMsg) {
+            saveMsg.style.color = "#00ff87";
+            saveMsg.textContent = "✅ Voorspellingen succesvol opgeslagen!";
+            setTimeout(() => { 
+                saveMsg.textContent = "Pas je voorspellingen aan en klik op opslaan."; 
+                saveMsg.style.color = "";
+            }, 3000);
+        }
+    } catch (err) {
+        if (saveMsg) {
+            saveMsg.style.color = "red";
+            saveMsg.textContent = "❌ Fout bij opslaan: " + err.message;
+        }
     }
+});
 
-    renderWedstrijden(wedstrijden, v_matches);
-    renderLandenTabel(landen, v_toernooi);
+async function laadAlles() {
+    try {
+        await ensureClient();
+        const authStatus = document.getElementById('auth-status');
+        if (authStatus) authStatus.textContent = `Speler: ${currentUser.email}`;
+        
+        // Haal data op uit de tabellen met de exacte namen
+        const { data: wedstrijden } = await supabase
+            .from('wedstrijden_poulfase')
+            .select('*, home:home_team_id(land, groep), away:away_team_id(land)')
+            .order('match_id');
+
+        const { data: landen } = await supabase
+            .from('landen')
+            .select('*')
+            .order('land');
+
+        const { data: v_matches } = await supabase.from('voorspellingen').select('*').eq('user_id', currentUser.id);
+        const { data: v_toernooi } = await supabase.from('voorspellingen_toernooi').select('*').eq('user_id', currentUser.id);
+
+        renderWedstrijden(wedstrijden || [], v_matches || []);
+        renderLandenTabel(landen || [], v_toernooi || []);
+    } catch (err) {
+        console.error("Fout bij het laden van de gegevens:", err);
+    }
 }
 
 laadAlles();

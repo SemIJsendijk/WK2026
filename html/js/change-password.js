@@ -59,8 +59,11 @@ if (form) {
 
             msg.style.color = 'green';
             msg.style.fontWeight = 'bold';
-            msg.textContent = 'Wachtwoord Succesvol Gewijzigd!';
-            
+            msg.textContent = 'Wachtwoord Succesvol Gewijzigd! Je wordt nu uitgelogd...';
+
+            // Verwijder de opgeslagen gebruiker zodat ze opnieuw moeten inloggen
+            localStorage.removeItem('currentUser');
+
             // Stuur de gebruiker na 2 seconden terug naar login
             setTimeout(() => { window.location.href = './index.html'; }, 2000);
 

@@ -21,22 +21,22 @@ async function ensureClient() {
 }
 
 // 3. Tab Navigatie
-window.showTab = function(tabName) {
+window.showTab = function (tabName) {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    
+
     const section = document.getElementById(`${tabName}-section`);
-    if(section) section.classList.add('active');
-    
+    if (section) section.classList.add('active');
+
     const btns = document.querySelectorAll('.tab-btn');
     btns.forEach(btn => {
-        if(btn.getAttribute('onclick')?.includes(tabName)) {
+        if (btn.getAttribute('onclick')?.includes(tabName)) {
             btn.classList.add('active');
         }
     });
 }
 
-// 4. Validatie Logica (NIEUW)
+// 4. Validatie Logica
 function setupLimitValidation() {
     const limits = {
         '32': 32,
@@ -49,20 +49,16 @@ function setupLimitValidation() {
     const tbody = document.getElementById('ko-body');
     if (!tbody) return;
 
-    // We gebruiken 'event delegation' op de body van de tabel
     tbody.addEventListener('change', (e) => {
         if (e.target.type === 'checkbox') {
-            // Haal het type op uit de naam (bijv: l_12_kf -> kf)
             const parts = e.target.name.split('_');
-            const type = parts[parts.length - 1]; 
+            const type = parts[parts.length - 1];
 
             if (limits[type]) {
-                // Tel hoeveel er NU zijn aangevinkt in deze kolom
-                // We zoeken op inputs die eindigen op dezelfde suffix (bijv: _kf)
                 const checkedCount = document.querySelectorAll(`input[name$="_${type}"]:checked`).length;
-                
+
                 if (checkedCount > limits[type]) {
-                    e.target.checked = false; // Draai de actie terug
+                    e.target.checked = false;
                     alert(`⚠️ Let op: Je mag maximaal ${limits[type]} landen selecteren voor deze ronde.`);
                 }
             }
@@ -83,7 +79,7 @@ function renderWedstrijden(wedstrijdenJson, bestaandeVoorspellingen) {
 
     const groepen = {};
     wedstrijdenJson.forEach(match => {
-        const g = match.home?.groep || 'Onbekend'; 
+        const g = match.home?.groep || 'Onbekend';
         if (!groepen[g]) groepen[g] = [];
         groepen[g].push(match);
     });
@@ -92,7 +88,7 @@ function renderWedstrijden(wedstrijdenJson, bestaandeVoorspellingen) {
         const kaart = document.createElement('div');
         kaart.className = 'group-card';
         let matchHtml = `<h3>Groep ${groepNaam}</h3>`;
-        
+
         groepen[groepNaam].forEach(m => {
             const v = bestaandeVoorspellingen.find(p => p.match_id === m.match_id) || {};
             const homeName = m.home ? m.home.land : 'Thuis';
@@ -102,8 +98,8 @@ function renderWedstrijden(wedstrijdenJson, bestaandeVoorspellingen) {
                 <div class="match">
                     <span class="team">${homeName}</span>
                     <div class="inputs">
-                        <input type="number" name="m_${m.match_id}_h" value="${v.voorspeld_thuis ?? ''}" placeholder="-" min="0">
-                        <input type="number" name="m_${m.match_id}_a" value="${v.voordspeld_uit ?? ''}" placeholder="-" min="0">
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" name="m_${m.match_id}_h" value="${v.voorspeld_thuis ?? ''}" placeholder="-">
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" name="m_${m.match_id}_a" value="${v.voorspeld_uit ?? ''}" placeholder="-">
                     </div>
                     <span class="team text-right">${awayName}</span>
                 </div>`;
@@ -115,9 +111,9 @@ function renderWedstrijden(wedstrijdenJson, bestaandeVoorspellingen) {
 
 function renderLandenTabel(landenJson, bestaandeToernooiVoorspellingen) {
     const tbody = document.getElementById('ko-body');
-    if(!tbody) return;
+    if (!tbody) return;
     tbody.innerHTML = '';
-    
+
     landenJson.forEach(land => {
         const v = bestaandeToernooiVoorspellingen.find(p => p.land_id === land.id) || {};
 
@@ -134,7 +130,6 @@ function renderLandenTabel(landenJson, bestaandeToernooiVoorspellingen) {
         tbody.insertAdjacentHTML('beforeend', rij);
     });
 
-    // Activeer de validatie nadat de tabel is getekend
     setupLimitValidation();
 }
 
@@ -146,40 +141,41 @@ if (form) {
         const saveMsg = document.getElementById('save-msg');
         saveMsg.textContent = "⌛ Bezig met opslaan...";
         saveMsg.style.color = "var(--text-dim)";
-        
+
         try {
             await ensureClient();
             const formData = new FormData(e.target);
-            
+
             // A. Wedstrijden
             const matchUpdates = [];
             const matchKeys = Array.from(formData.keys()).filter(k => k.startsWith('m_') && k.endsWith('_h'));
-            
+
             matchKeys.forEach(key => {
                 const id = key.split('_')[1];
                 const homeVal = formData.get(`m_${id}_h`);
                 const awayVal = formData.get(`m_${id}_a`);
 
-                if (homeVal !== "" && awayVal !== "") {
-                    matchUpdates.push({
-                        user_id: currentUser.id,
-                        match_id: parseInt(id),
-                        voorspeld_thuis: parseInt(homeVal),
-                        voordspeld_uit: parseInt(awayVal)
-                    });
-                }
+                // Always push the update. If an input is empty, parse it as 0.
+                const homeGoals = homeVal.trim() === "" ? 0 : parseInt(homeVal);
+                const awayGoals = awayVal.trim() === "" ? 0 : parseInt(awayVal);
+
+                matchUpdates.push({
+                    user_id: currentUser.id,
+                    match_id: parseInt(id),
+                    voorspeld_thuis: homeGoals,
+                    voorspeld_uit: awayGoals // Corrected spelling here
+                });
             });
 
-            // B. Toernooi (Loop over ALLE landen in de DOM om unchecks mee te pakken)
+            // B. Toernooi
             const toernooiUpdates = [];
-            const winnerId = formData.get('winnaar'); 
-            
-            // We halen alle radio buttons op (1 per land) om zeker elk land te itereren
+            const winnerId = formData.get('winnaar');
+
             const allLandInputs = document.querySelectorAll('input[name="winnaar"]');
-            
+
             allLandInputs.forEach(input => {
                 const landId = input.value;
-                
+
                 toernooiUpdates.push({
                     user_id: currentUser.id,
                     land_id: parseInt(landId),
@@ -206,8 +202,8 @@ if (form) {
             if (error) throw error;
 
             saveMsg.textContent = "✅ Alles succesvol opgeslagen!";
-            saveMsg.style.color = "#00ff87"; 
-            
+            saveMsg.style.color = "#00ff87";
+
             setTimeout(() => {
                 saveMsg.textContent = "Pas je voorspellingen aan en klik op opslaan.";
                 saveMsg.style.color = "var(--text-dim)";
@@ -226,7 +222,7 @@ async function laadAlles() {
     try {
         await ensureClient();
         const statusEl = document.getElementById('auth-status');
-        if(statusEl) statusEl.textContent = `Speler: ${currentUser.email}`;
+        if (statusEl) statusEl.textContent = `Speler: ${currentUser.email}`;
 
         const { data: wedstrijden, error: wError } = await supabase
             .from('wedstrijden_poulfase')
@@ -247,7 +243,7 @@ async function laadAlles() {
     } catch (err) {
         console.error("Laden mislukt:", err);
         const grid = document.getElementById('group-grid');
-        if(grid) grid.innerHTML = `<div style="color:red; padding:20px;">Error: ${err.message}<br>Check console.</div>`;
+        if (grid) grid.innerHTML = `<div style="color:red; padding:20px;">Error: ${err.message}<br>Check console.</div>`;
     }
 }
 

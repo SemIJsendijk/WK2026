@@ -1,6 +1,8 @@
 :root {
-    --primary: #00ff87; /* FIFA Green */
-    --secondary: #38003c; /* Deep Purple */
+    --primary: #00ff87;
+    /* FIFA Green */
+    --secondary: #38003c;
+    /* Deep Purple */
     --bg: #0d1117;
     --card-bg: #161b22;
     --border: #30363d;
@@ -9,7 +11,9 @@
     --white: #ffffff;
 }
 
-* { box-sizing: border-box; }
+* {
+    box-sizing: border-box;
+}
 
 body {
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -17,7 +21,8 @@ body {
     color: var(--text-main);
     margin: 0;
     line-height: 1.5;
-    padding-bottom: 100px; /* Ruimte voor de sticky save bar */
+    padding-bottom: 100px;
+    /* Ruimte voor de sticky save bar */
 }
 
 .container {
@@ -33,10 +38,21 @@ header {
     border-bottom: 1px solid var(--border);
 }
 
-.header-flex { display: flex; justify-content: space-between; align-items: center; }
+.header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-h1 { margin: 0; font-size: 1.5rem; color: var(--white); }
-h1 span { color: var(--primary); }
+h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--white);
+}
+
+h1 span {
+    color: var(--primary);
+}
 
 .auth-pill {
     background: var(--border);
@@ -102,8 +118,14 @@ h1 span { color: var(--primary); }
     border-bottom: 1px solid rgba(48, 54, 61, 0.5);
 }
 
-.team { width: 35%; font-size: 0.95rem; }
-.text-right { text-align: right; }
+.team {
+    width: 35%;
+    font-size: 0.95rem;
+}
+
+.text-right {
+    text-align: right;
+}
 
 .inputs {
     display: flex;
@@ -111,7 +133,8 @@ h1 span { color: var(--primary); }
     gap: 6px;
 }
 
-input[type="number"] {
+input[type="number"],
+.inputs input[type="text"] {
     width: 40px;
     height: 32px;
     background: var(--bg);
@@ -122,10 +145,16 @@ input[type="number"] {
     font-weight: bold;
 }
 
-input:focus { border-color: var(--primary); outline: none; }
+input:focus {
+    border-color: var(--primary);
+    outline: none;
+}
 
 /* Table styles */
-.table-card { margin-top: 30px; overflow-x: auto; }
+.table-card {
+    margin-top: 30px;
+    overflow-x: auto;
+}
 
 .ko-table {
     width: 100%;
@@ -134,15 +163,19 @@ input:focus { border-color: var(--primary); outline: none; }
     border-radius: 12px;
 }
 
-.ko-table th, .ko-table td {
+.ko-table th,
+.ko-table td {
     padding: 12px 15px;
     text-align: center;
     border-bottom: 1px solid var(--border);
 }
 
-.text-left { text-align: left !important; }
+.text-left {
+    text-align: left !important;
+}
 
-input[type="checkbox"], input[type="radio"] {
+input[type="checkbox"],
+input[type="radio"] {
     width: 18px;
     height: 18px;
     accent-color: var(--primary);
@@ -157,10 +190,14 @@ input[type="checkbox"], input[type="radio"] {
     background: var(--card-bg);
     border-top: 2px solid var(--primary);
     padding: 15px 0;
-    box-shadow: 0 -10px 20px rgba(0,0,0,0.5);
+    box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.5);
 }
 
-.save-flex { display: flex; justify-content: space-between; align-items: center; }
+.save-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
 .btn-save {
     background: var(--primary);
@@ -174,9 +211,15 @@ input[type="checkbox"], input[type="radio"] {
     transition: transform 0.1s;
 }
 
-.btn-save:active { transform: scale(0.95); }
+.btn-save:active {
+    transform: scale(0.95);
+}
 
-.save-msg { font-size: 0.9rem; color: var(--text-dim); margin: 0; }
+.save-msg {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    margin: 0;
+}
 
 /* Verberg content die niet actief is */
 .tab-content {
@@ -190,6 +233,13 @@ input[type="checkbox"], input[type="radio"] {
 
 /* Mobile optimization */
 @media (max-width: 600px) {
-    .save-flex { flex-direction: column; gap: 10px; text-align: center; }
-    .team { font-size: 0.85rem; }
+    .save-flex {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .team {
+        font-size: 0.85rem;
+    }
 }

@@ -1,14 +1,36 @@
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>home</title>
-		<noscript>
-    		<meta http-equiv="refresh" content="0;url=index.html">
-		</noscript>
-	</head>
-	<body>
-		hello
-	</body>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>home</title>
+	<noscript>
+		<meta http-equiv="refresh" content="0;url=index.html">
+	</noscript>
+</head>
+
+<body>
+	<div class="container" style="padding: 2rem; font-family: sans-serif;">
+		<h1>Welkom bij WK 2026 Poule!</h1>
+		<p>Je bent succesvol ingelogd.</p>
+
+		<div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+			<a href="account.html"
+				style="padding: 0.75rem 1.5rem; background: #0055ff; color: white; text-decoration: none; border-radius: 6px; font-weight: bold;">Mijn
+				Account</a>
+			<button id="logout-btn"
+				style="padding: 0.75rem 1.5rem; background: #ff4444; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">Uitloggen</button>
+		</div>
+	</div>
+
+	<script>
+		// Basic logout logic to clear the saved session and redirect
+		document.getElementById('logout-btn').addEventListener('click', () => {
+			localStorage.removeItem('currentUser');
+			window.location.href = './index.html';
+		});
+	</script>
+</body>
+
 </html>

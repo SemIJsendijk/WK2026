@@ -98,9 +98,9 @@ function renderWedstrijden(wedstrijdenJson, bestaandeVoorspellingen) {
                 <div class="match">
                     <span class="team">${homeName}</span>
                     <div class="inputs">
-                        <input type="text" inputmode="numeric" pattern="[0-9]*" name="m_${m.match_id}_h" value="${v.voorspeld_thuis ?? ''}" placeholder="-">
-                        <input type="text" inputmode="numeric" pattern="[0-9]*" name="m_${m.match_id}_a" value="${v.voorspeld_uit ?? ''}" placeholder="-">
-                    </div>
+                <input type="text" inputmode="numeric" pattern="[0-9]*" name="m_${m.match_id}_h" value="${v.voorspeld_thuis ?? ''}" placeholder="-">
+                <input type="text" inputmode="numeric" pattern="[0-9]*" name="m_${m.match_id}_a" value="${v.voorspeld_uit ?? ''}" placeholder="-">
+            </div>
                     <span class="team text-right">${awayName}</span>
                 </div>`;
         });
@@ -246,5 +246,10 @@ async function laadAlles() {
         if (grid) grid.innerHTML = `<div style="color:red; padding:20px;">Error: ${err.message}<br>Check console.</div>`;
     }
 }
+
+document.getElementById('logout-btn').addEventListener('click', () => {
+    localStorage.removeItem('currentUser');
+    window.location.href = './index.html';
+});
 
 laadAlles();

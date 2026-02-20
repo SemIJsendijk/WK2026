@@ -35,13 +35,13 @@ if (form) {
         if (newPw !== confirmPw) {
             msg.style.color = 'red';
             msg.style.fontWeight = 'bold';
-            msg.textContent = 'Nieuwe Wachtwoorden Komen Niet Overeen.';
+            msg.textContent = 'Nieuwe wachtwoorden komen niet overeen.';
             return;
         }
 
         msg.style.color = 'black';
         msg.style.fontWeight = 'bold';
-        msg.textContent = 'Bezig met Verifiëren...';
+        msg.textContent = 'Bezig met verifiëren...';
 
         try {
             await ensureClient();
@@ -54,12 +54,12 @@ if (form) {
             });
 
             if (error || !data) {
-                throw new Error(error?.message || 'E-mail of Wachtwoord is Onjuist.');
+                throw new Error(error?.message || 'E-mail of wachtwoord is onjuist.');
             }
 
             msg.style.color = 'green';
             msg.style.fontWeight = 'bold';
-            msg.textContent = 'Wachtwoord Succesvol Gewijzigd! Je wordt nu uitgelogd...';
+            msg.textContent = 'Wachtwoord succesvol gewijzigd! Je wordt nu uitgelogd...';
 
             // Verwijder de opgeslagen gebruiker zodat ze opnieuw moeten inloggen
             localStorage.removeItem('currentUser');

@@ -1,13 +1,14 @@
 :root {
-    --primary: #00ff87;
-    /* FIFA Green */
-    --secondary: #38003c;
-    /* Deep Purple */
-    --bg: #0d1117;
-    --card-bg: #161b22;
-    --border: #30363d;
-    --text-main: #e6edf3;
-    --text-dim: #8b949e;
+    --primary: #FF7F00;
+    /* Oranje accentkleur */
+    --secondary: #333;
+    --bg: #ffffff;
+    /* Witte achtergrond */
+    --card-bg: #f9f9f9;
+    --border: #dddddd;
+    --text-main: #000000;
+    /* Zwarte tekst voor landnamen */
+    --text-dim: #666666;
     --white: #ffffff;
 }
 
@@ -22,7 +23,7 @@ body {
     margin: 0;
     line-height: 1.5;
     padding-bottom: 100px;
-    /* Ruimte voor de sticky save bar */
+    /* Ruimte voor de save-bar */
 }
 
 .container {
@@ -31,10 +32,10 @@ body {
     padding: 0 20px;
 }
 
-/* Header & Nav */
+/* Header & Navigatie */
 header {
-    background: var(--card-bg);
-    padding: 20px 0;
+    background: #fff;
+    padding: 15px 0;
     border-bottom: 1px solid var(--border);
 }
 
@@ -47,22 +48,62 @@ header {
 h1 {
     margin: 0;
     font-size: 1.5rem;
-    color: var(--white);
+    color: #000;
 }
 
 h1 span {
     color: var(--primary);
 }
 
-.auth-pill {
-    background: var(--border);
-    padding: 6px 15px;
-    border-radius: 20px;
-    font-size: 0.85rem;
+.header-nav {
+    display: flex;
+    gap: 12px;
+    align-items: center;
 }
 
+/* Knoppen in de header - Gelijk in hoogte en breedte */
+.btn-nav {
+    display: inline-flex;
+    /* Zorgt voor betere uitlijning van tekst */
+    align-items: center;
+    /* Verticaal centreren */
+    justify-content: center;
+    /* Horizontaal centreren */
+    text-decoration: none;
+    background: #0055ff;
+    color: white;
+    height: 40px;
+    /* Vaste hoogte zodat ze exact even groot zijn */
+    width: 140px;
+    /* Vaste breedte */
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    box-sizing: border-box;
+}
+
+.btn-nav:hover {
+    background: #0044cc;
+}
+
+.btn-nav:active {
+    transform: scale(0.98);
+}
+
+.btn-logout {
+    background: #FF7F00;
+}
+
+.btn-logout:hover {
+    background: #FF7F00;
+}
+
+/* Tabs */
 .tab-nav {
-    background: var(--card-bg);
+    background: #f1f1f1;
     padding: 10px 0;
     position: sticky;
     top: 0;
@@ -86,7 +127,7 @@ h1 span {
     border-bottom-color: var(--primary);
 }
 
-/* Grid & Cards */
+/* Groepen Grid & Kaarten */
 .group-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -99,109 +140,87 @@ h1 span {
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
+/* Groepnamen in oranje */
 .group-card h3 {
     margin: 0 0 15px 0;
     font-size: 1.2rem;
     color: var(--primary);
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary);
+    padding-bottom: 8px;
 }
 
-/* Match Row */
+/* Wedstrijden */
 .match {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 10px 0;
-    border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
+/* Landnamen in zwart */
 .team {
     width: 35%;
     font-size: 0.95rem;
+    color: #000000;
+    font-weight: 500;
 }
 
 .text-right {
     text-align: right;
 }
 
+/* Score Inputs */
 .inputs {
     display: flex;
     align-items: center;
     gap: 6px;
 }
 
-input[type="number"],
-.inputs input[type="text"] {
+input[type="text"] {
     width: 40px;
     height: 32px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    color: var(--white);
+    background: #fff;
+    border: 1px solid #ccc;
+    color: #000;
     text-align: center;
     border-radius: 6px;
     font-weight: bold;
 }
 
-input:focus {
+input[type="text"]:focus {
     border-color: var(--primary);
     outline: none;
 }
 
-/* Table styles */
-.table-card {
-    margin-top: 30px;
-    overflow-x: auto;
-}
-
-.ko-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: var(--card-bg);
-    border-radius: 12px;
-}
-
-.ko-table th,
-.ko-table td {
-    padding: 12px 15px;
-    text-align: center;
-    border-bottom: 1px solid var(--border);
-}
-
-.text-left {
-    text-align: left !important;
-}
-
-input[type="checkbox"],
-input[type="radio"] {
-    width: 18px;
-    height: 18px;
-    accent-color: var(--primary);
-    cursor: pointer;
-}
-
-/* Sticky Save Bar */
+/* Sticky Save Bar - Volledige breedte */
 .save-bar {
     position: fixed;
     bottom: 0;
+    left: 0;
     width: 100%;
-    background: var(--card-bg);
-    border-top: 2px solid var(--primary);
+    background: #fff;
+    border-top: 3px solid var(--primary);
     padding: 15px 0;
-    box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+    z-index: 100;
 }
 
 .save-flex {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
 .btn-save {
     background: var(--primary);
-    color: var(--secondary);
+    color: white;
     border: none;
     padding: 12px 30px;
     font-weight: 800;
@@ -221,25 +240,44 @@ input[type="radio"] {
     margin: 0;
 }
 
-/* Verberg content die niet actief is */
+/* Knock-out Tabel */
+.card.table-card {
+    margin-top: 30px;
+    overflow-x: auto;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.ko-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #000;
+}
+
+.ko-table th {
+    background: #f8f8f8;
+    color: var(--primary);
+    padding: 12px;
+    text-align: center;
+    border-bottom: 2px solid var(--border);
+}
+
+.ko-table td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+}
+
+.text-left {
+    text-align: left !important;
+}
+
+/* Verbergen van inactieve content */
 .tab-content {
     display: none;
 }
 
-/* Toon alleen de actieve tab */
 .tab-content.active {
     display: block;
-}
-
-/* Mobile optimization */
-@media (max-width: 600px) {
-    .save-flex {
-        flex-direction: column;
-        gap: 10px;
-        text-align: center;
-    }
-
-    .team {
-        font-size: 0.85rem;
-    }
 }

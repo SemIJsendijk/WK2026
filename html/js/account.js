@@ -69,25 +69,12 @@ async function init() {
         if (userId) {
             const { data: userById, error: idError } = await supabase
                 .from('users')
-                .select('email, full_name')
+                .select('email, full_name, is_admin')
                 .eq('id', userId)
                 .maybeSingle();
 
             if (!idError && userById) {
                 userData = userById;
-            }
-        }
-
-        // If not found by ID, try by email
-        if (!userData && sessionEmail) {
-            const { data: userByEmail, error: emailError } = await supabase
-                .from('users')
-                .select('email, full_name')
-                .ilike('email', sessionEmail)
-                .limit(1);
-
-            if (!emailError && userByEmail && userByEmail.length > 0) {
-                userData = userByEmail[0];
             }
         }
 
@@ -98,8 +85,57 @@ async function init() {
             return;
         }
 
-        // 3. Render content from database
-        renderProfile(userData.full_name, userData.email);
+        // 3. Render content (database data or fallback)
+        if (!userData) {
+            console.warn('User not found in DB, using cached data');
+            renderProfile(sessionName, sessionEmail);
+        } else {
+            renderProfile(userData.full_name, userData.email);
+        }
+
+        // 4. Check for admin and render button (Bulletproof check via RPC)
+        let isAdmin = false;
+        let debugSource = "None";
+
+        // Check if we already know they are admin via cache or userData
+        if (userData && userData.is_admin) {
+            isAdmin = true;
+            debugSource = "Database (users table)";
+        } else if (cachedUser.is_admin) {
+            isAdmin = true;
+            debugSource = "Local Cache (localStorage)";
+        } else if (userId) {
+            // Otherwise, use the exact same secure RPC method as admin.js
+            try {
+                const { data: rpcAdmin, error: rpcError } = await supabase.rpc('check_is_admin', {
+                    check_user_id: userId
+                });
+                isAdmin = !!rpcAdmin;
+                debugSource = `RPC Check (Value: ${rpcAdmin} | Error: ${rpcError ? rpcError.message : 'None'})`;
+            } catch (e) {
+                debugSource = `RPC Failed: ${e.message}`;
+            }
+        }
+
+        // --- TEMPORARY DEBUG MESSAGE ---
+        const debugMsg = document.getElementById('status-message');
+        if (debugMsg) {
+            debugMsg.textContent = `DEBUG -> is_admin: ${isAdmin} | Source: ${debugSource}`;
+            debugMsg.style.color = 'blue';
+            debugMsg.style.display = 'block';
+        }
+        // -------------------------------
+
+        if (isAdmin) {
+            const adminContainer = document.getElementById('admin-container');
+            if (adminContainer) {
+                adminContainer.innerHTML = `
+                    <a href="admin.html" class="btn" style="background: #333; color: white; display: block; text-align: center; margin-bottom: 0.5rem; text-decoration: none; padding: 0.75rem; border-radius: 6px; font-weight: bold;">
+                        Admin Dashboard
+                    </a>
+                `;
+            }
+        }
 
     } catch (err) {
         console.error('Init error:', err);
@@ -115,4 +151,13 @@ if (changePasswordBtn) {
     });
 }
 
+const logoutBtn = document.getElementById('logout-btn');
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('currentUser');
+        window.location.href = './index.html';
+    });
+}
+
 document.addEventListener('DOMContentLoaded', init);
+

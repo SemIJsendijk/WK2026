@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="nl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - WK 2026 Poule</title>
+    <link rel="stylesheet" href="./css/voorspellingen.css">
+    <link rel="stylesheet" href="./css/header.css">
+    <style>
+        .admin-container {
+            padding-top: 20px;
+        }
+
+        .match-form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .match-id {
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            width: 30px;
+        }
+
+        .save-btn-small {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            margin-top: 40px;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-container header-flex">
+            <a href="home.html" class="header-brand">
+                <h1>Admin <span>Dashboard</span></h1>
+            </a>
+            <div class="header-nav">
+                <a href="voorspellingen.html" class="btn-nav">Voorspellingen</a>
+                <a href="account.html" class="btn-nav">Mijn Account</a>
+                <button id="logout-btn" class="btn-nav btn-logout">Uitloggen</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="tab-nav">
+        <div class="container">
+            <button class="tab-btn active" onclick="showTab('matches')">Wedstrijd Resultaten</button>
+            <button class="tab-btn" onclick="showTab('countries')">Landen Progressie</button>
+        </div>
+    </div>
+
+    <main class="container admin-container">
+        <div id="matches-section" class="tab-content active">
+            <h2 class="section-title">Wedstrijden Aanpassen</h2>
+            <div id="matches-grid" class="group-grid">
+                <div class="loading-spinner">Laden...</div>
+            </div>
+        </div>
+
+        <div id="countries-section" class="tab-content">
+            <h2 class="section-title">Landen Progressie</h2>
+            <div class="card table-card">
+                <table class="ko-table">
+                    <thead>
+                        <tr>
+                            <th class="text-left">Land</th>
+                            <th>L32</th>
+                            <th>L16</th>
+                            <th>KF</th>
+                            <th>HF</th>
+                            <th>F</th>
+                            <th>Winnaar</th>
+                            <th>Actie</th>
+                        </tr>
+                    </thead>
+                    <tbody id="countries-body">
+                        <!-- Wordt gevuld door JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <div class="save-bar">
+        <div class="save-flex">
+            <p id="save-msg" class="save-msg">Pas resultaten aan en klik op opslaan per rij of alles hieronder.</p>
+            <button id="save-all-btn" class="btn-save">Alles Opslaan</button>
+        </div>
+    </div>
+
+    <script type="module" src="./js/admin.js"></script>
+</body>
+
+</html>

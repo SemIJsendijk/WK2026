@@ -1,0 +1,80 @@
+:root {
+    --primary: #FF7F00;
+    --border: #dddddd;
+}
+
+.header-container {
+    padding: 0 40px;
+}
+
+header {
+    background: #fff;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--border);
+    width: 100%;
+}
+
+.header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-brand,
+.header-brand:visited {
+    text-decoration: none;
+    color: inherit;
+}
+
+.header-brand h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #000;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+.header-brand h1 span {
+    color: var(--primary);
+}
+
+.header-nav {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+/* Knoppen in de header - Gelijk in hoogte en breedte */
+.btn-nav {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    background: #0055ff;
+    color: white;
+    height: 40px;
+    width: 140px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+.btn-nav:hover {
+    background: #0044cc;
+}
+
+.btn-nav:active {
+    transform: scale(0.98);
+}
+
+.btn-logout {
+    background: #FF7F00;
+}
+
+.btn-logout:hover {
+    background: #e67300;
+}

@@ -136,6 +136,16 @@ body {
     background-color: #5a6268;
 }
 
+.btn-admin {
+    background-color: #333;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.btn-admin:hover {
+    background-color: #444;
+}
+
 footer {
     background-color: #f8f9fa;
     padding: 1rem;

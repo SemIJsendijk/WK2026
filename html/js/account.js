@@ -37,7 +37,7 @@ function renderProfile(name, email) {
             <div class="info-value">${name || 'Niet opgegeven'}</div>
         </div>
         <div class="info-group">
-            <label>E-mailadres</label>
+            <label>Email</label>
             <div class="info-value">${email || 'Niet opgegeven'}</div>
         </div>
     `;
@@ -66,18 +66,16 @@ async function init() {
 
         // 2. Fetch latest data from 'users' table
         // First try by ID if available (most reliable)
+        // 2. Fetch latest data via secure RPC
         if (userId) {
-            const { data: userById, error: idError } = await supabase
-                .from('users')
-                .select('email, full_name, is_admin')
-                .eq('id', userId)
-                .maybeSingle();
+            const { data: userProfile, error: rpcError } = await supabase.rpc('get_user_profile', {
+                p_user_id: userId
+            });
 
-            if (!idError && userById) {
-                userData = userById;
+            if (!rpcError && userProfile) {
+                userData = userProfile;
             }
         }
-
         if (!userData) {
             console.warn('User not found in DB, using cached data');
             // Instead of showing a scary error, we just show what we have in the session
@@ -117,20 +115,11 @@ async function init() {
             }
         }
 
-        // --- TEMPORARY DEBUG MESSAGE ---
-        const debugMsg = document.getElementById('status-message');
-        if (debugMsg) {
-            debugMsg.textContent = `DEBUG -> is_admin: ${isAdmin} | Source: ${debugSource}`;
-            debugMsg.style.color = 'blue';
-            debugMsg.style.display = 'block';
-        }
-        // -------------------------------
-
         if (isAdmin) {
             const adminContainer = document.getElementById('admin-container');
             if (adminContainer) {
                 adminContainer.innerHTML = `
-                    <a href="admin.html" class="btn" style="background: #333; color: white; display: block; text-align: center; margin-bottom: 0.5rem; text-decoration: none; padding: 0.75rem; border-radius: 6px; font-weight: bold;">
+                    <a href="admin.html" class="btn btn-admin">
                         Admin Dashboard
                     </a>
                 `;

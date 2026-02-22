@@ -7,11 +7,19 @@
     padding: 0 40px;
 }
 
-header {
+header,
+footer {
     background: #fff;
     padding: 15px 0;
-    border-bottom: 1px solid var(--border);
     width: 100%;
+}
+
+header {
+    border-bottom: 1px solid var(--border);
+}
+
+footer {
+    border-top: 1px solid var(--border);
 }
 
 .header-flex {

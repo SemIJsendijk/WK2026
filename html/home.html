@@ -9,10 +9,65 @@
 	<noscript>
 		<meta http-equiv="refresh" content="0;url=index.html">
 	</noscript>
+	<style>
+		body {
+			display: flex;
+			flex-direction: column;
+			min-height: 100vh;
+			margin: 0;
+			background: linear-gradient(180deg, #FF7F00 0%, #ffffff 100%);
+			background-attachment: fixed;
+		}
+
+		.home-content {
+			min-height: 100vh;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			padding: 0;
+			font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+		}
+
+
+
+		.gif-box {
+			max-width: 95vw;
+			max-height: 90vh;
+			width: 100%;
+			border-radius: 60px;
+			/* The "edges" are back for clipping */
+			overflow: hidden;
+			padding: 0;
+			/* No visible gap unless content needs it */
+			background: transparent;
+			border: 3px solid transparent;
+			/* Edge is there but invisible */
+			transition: transform 0.3s ease;
+		}
+
+
+
+		.gif-placeholder {
+			width: 100%;
+			height: auto;
+			display: block;
+			min-height: 80vh;
+			object-fit: contain;
+			border-radius: 60px;
+			/* Matching rounding */
+		}
+	</style>
 </head>
 
 <body>
-	<header>
+	<main class="home-content">
+		<div class="gif-box">
+			<img src="./pictures/giphy.gif" alt="WK 2026 Animatie" class="gif-placeholder">
+		</div>
+	</main>
+
+	<footer>
 		<div class="header-container header-flex">
 			<a href="home.html" class="header-brand">
 				<h1>WK 2026 <span>Home</span></h1>
@@ -23,11 +78,7 @@
 				<button id="logout-btn" class="btn-nav btn-logout">Uitloggen</button>
 			</div>
 		</div>
-	</header>
-
-	<div class="container" style="padding: 2rem; font-family: sans-serif;">
-		<h1>Welkom bij WK 2026 Poule!</h1>
-	</div>
+	</footer>
 
 	<script>
 		// Basic logout logic to clear the saved session and redirect

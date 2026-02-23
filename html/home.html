@@ -10,62 +10,115 @@
 		<meta http-equiv="refresh" content="0;url=index.html">
 	</noscript>
 	<style>
+		html {
+			scroll-snap-type: y mandatory;
+			scroll-behavior: smooth;
+		}
+
 		body {
-			display: flex;
-			flex-direction: column;
-			min-height: 100vh;
 			margin: 0;
 			background: linear-gradient(180deg, #FF7F00 0%, #ffffff 100%);
 			background-attachment: fixed;
+			font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
 		}
 
-		.home-content {
-			min-height: 100vh;
+		.snap-section {
+			height: 100vh;
+			width: 100%;
+			scroll-snap-align: start;
 			display: flex;
 			flex-direction: column;
 			align-items: center;
 			justify-content: center;
-			padding: 0;
-			font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+			position: relative;
 		}
-
-
 
 		.gif-box {
 			max-width: 95vw;
-			max-height: 90vh;
+			max-height: 80vh;
 			width: 100%;
 			border-radius: 60px;
-			/* The "edges" are back for clipping */
 			overflow: hidden;
-			padding: 0;
-			/* No visible gap unless content needs it */
 			background: transparent;
 			border: 3px solid transparent;
-			/* Edge is there but invisible */
 			transition: transform 0.3s ease;
 		}
-
-
 
 		.gif-placeholder {
 			width: 100%;
 			height: auto;
 			display: block;
-			min-height: 80vh;
+			min-height: 60vh;
 			object-fit: contain;
 			border-radius: 60px;
-			/* Matching rounding */
+		}
+
+		.success-text {
+			font-size: clamp(3rem, 15vw, 8rem);
+			font-weight: 900;
+			color: var(--primary);
+			text-transform: uppercase;
+			letter-spacing: -2px;
+			margin: 0;
+			text-align: center;
+			text-shadow: 0 10px 30px rgba(255, 127, 0, 0.3);
+			animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+		}
+
+		@keyframes popIn {
+			0% {
+				opacity: 0;
+				transform: scale(0.5);
+			}
+
+			100% {
+				opacity: 1;
+				transform: scale(1);
+			}
+		}
+
+		footer {
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			width: 100%;
+			z-index: 100;
+			background: rgba(255, 255, 255, 0.9);
+			backdrop-filter: blur(10px);
+			border-top: 1px solid var(--border);
 		}
 	</style>
 </head>
 
 <body>
-	<main class="home-content">
-		<div class="gif-box">
-			<img src="./pictures/giphy.gif" alt="WK 2026 Animatie" class="gif-placeholder">
-		</div>
+	<main>
+		<section class="snap-section">
+			<div class="gif-box">
+				<img src="./pictures/giphy.gif" alt="WK 2026 Animatie" class="gif-placeholder">
+			</div>
+		</section>
+
+		<section class="snap-section">
+			<a href="leaderboard.html" class="success-text stand-link" style="text-decoration: none;">Stand</a>
+		</section>
+
+		<section class="snap-section">
+			<h2 class="success-text">Succes</h2>
+		</section>
 	</main>
+
+	<style>
+		.stand-link {
+			transition: transform 0.3s ease, color 0.3s ease;
+			cursor: pointer;
+		}
+
+		.stand-link:hover {
+			transform: scale(1.1);
+			color: #0055ff;
+			/* Match the blue from nav buttons on hover */
+		}
+	</style>
 
 	<footer>
 		<div class="header-container header-flex">

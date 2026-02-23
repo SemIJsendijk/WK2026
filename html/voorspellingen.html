@@ -25,29 +25,63 @@
 
     <nav class="tab-nav">
         <div class="container">
-            <button class="tab-btn active" onclick="showTab('poule')">Poulfase</button>
-            <button class="tab-btn" onclick="showTab('knockout')">Knock-out & Winnaar</button>
+            <button class="tab-btn active" onclick="showTab('poule')">⚽ Poulfase</button>
+            <button class="tab-btn" onclick="showTab('l32')">L32</button>
+            <button class="tab-btn" onclick="showTab('l16')">L16</button>
+            <button class="tab-btn" onclick="showTab('kf')">⚔️ Kwartfinale</button>
+            <button class="tab-btn" onclick="showTab('hf')">🔥 Halve finale</button>
+            <button class="tab-btn" onclick="showTab('tf')">🥉 Troostfinale</button>
+            <button class="tab-btn" onclick="showTab('fin')">🏆 Finale</button>
+            <button class="tab-btn" onclick="showTab('toernooi')">📊 Verloop</button>
         </div>
     </nav>
 
     <main class="container">
         <form id="prediction-form">
             <section id="poule-section" class="tab-content active">
+                <h2 class="section-title">Poulfase</h2>
                 <div id="group-grid" class="group-grid">
-                    <div class="loader">Wedstrijden ophalen...</div>
+                    <div class="loader">Poulfase ophalen...</div>
                 </div>
             </section>
 
-            <section id="knockout-section" class="tab-content">
+            <section id="l32-section" class="tab-content">
+                <h2 class="section-title">Laatste 32</h2>
+                <div id="l32-grid" class="ko-grid"></div>
+            </section>
+            <section id="l16-section" class="tab-content">
+                <h2 class="section-title">Laatste 16</h2>
+                <div id="l16-grid" class="ko-grid"></div>
+            </section>
+            <section id="kf-section" class="tab-content">
+                <h2 class="section-title">Kwartfinale</h2>
+                <div id="kf-grid" class="ko-grid"></div>
+            </section>
+            <section id="hf-section" class="tab-content">
+                <h2 class="section-title">Halve finale</h2>
+                <div id="hf-grid" class="ko-grid"></div>
+            </section>
+            <section id="tf-section" class="tab-content">
+                <h2 class="section-title">Troostfinale</h2>
+                <div id="tf-grid" class="ko-grid"></div>
+            </section>
+            <section id="fin-section" class="tab-content">
+                <h2 class="section-title">Finale</h2>
+                <div id="fin-grid" class="ko-grid"></div>
+            </section>
+
+            <section id="toernooi-section" class="tab-content">
+                <h2 class="section-title">Toernooiverloop</h2>
                 <div class="card table-card">
                     <table class="ko-table">
                         <thead>
                             <tr>
-                                <th class="text-left">Land</th>
+                                <th>Land</th>
                                 <th>32</th>
                                 <th>16</th>
                                 <th>KF</th>
                                 <th>HF</th>
+                                <th>TF</th>
                                 <th>F</th>
                                 <th>🏆</th>
                             </tr>

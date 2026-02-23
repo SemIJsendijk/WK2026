@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="nl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WK 2026 - Leaderboard</title>
+    <link rel="stylesheet" href="./css/voorspellingen.css">
+    <link rel="stylesheet" href="./css/header.css">
+    <style>
+        .leaderboard-container {
+            max-width: 800px;
+            margin: 40px auto;
+        }
+
+        .rank-1 {
+            background-color: #ffd700;
+            font-weight: bold;
+        }
+
+        /* Goud */
+        .rank-2 {
+            background-color: #e3e4e5;
+            font-weight: bold;
+        }
+
+        /* Zilver */
+        .rank-3 {
+            background-color: #cd7f32;
+            font-weight: bold;
+        }
+
+        /* Brons */
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-container header-flex">
+            <a href="home.html" class="header-brand">
+                <h1>WK 2026 <span>Leaderboard</span></h1>
+            </a>
+            <div class="header-nav">
+                <a href="voorspellingen.html" class="btn-nav">Voorspellingen</a>
+                <a href="account.html" class="btn-nav">Mijn Account</a>
+                <button id="logout-btn" class="btn-nav btn-logout">Uitloggen</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container leaderboard-container">
+        <h2 class="section-title">Stand Algemeen Klassement</h2>
+
+        <div class="card table-card">
+            <table class="ko-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th class="text-left">Speler</th>
+                        <th>Punten</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                    <tr>
+                        <td colspan="3">Leaderboard laden...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script type="module">
+        import { fetchLeaderboard, renderLeaderboard, subscribeToUpdates } from './js/leaderboard.js';
+
+        async function init() {
+            const data = await fetchLeaderboard();
+            renderLeaderboard(data);
+
+            // Luister live naar updates in alle 3 de tabellen die de score beïnvloeden
+            subscribeToUpdates(async () => {
+                const updatedData = await fetchLeaderboard();
+                renderLeaderboard(updatedData);
+            });
+        }
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.removeItem('currentUser');
+            window.location.href = './index.html';
+        });
+
+        init();
+    </script>
+</body>
+
+</html>

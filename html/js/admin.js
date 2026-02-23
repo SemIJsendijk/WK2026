@@ -67,6 +67,7 @@ const ROUND_LIMITS = {
     'laatste_16': 16,
     'kwartfinale': 8,
     'halvefinale': 4,
+    'troostfinale': 2,
     'finale': 2,
     'winnaar': 1
 };
@@ -133,6 +134,91 @@ function renderMatches(matches) {
     });
 }
 
+function renderKnockoutAdminMatches(koWedstrijden) {
+    const containers = {
+        'Laatste 32': document.getElementById('l32-grid'),
+        'Laatste 16': document.getElementById('l16-grid'),
+        'Kwartfinale': document.getElementById('kf-grid'),
+        'Halve finale': document.getElementById('hf-grid'),
+        'Troostfinale': document.getElementById('tf-grid'),
+        'Finale': document.getElementById('fin-grid')
+    };
+
+    Object.values(containers).forEach(c => { if (c) c.innerHTML = ''; });
+
+    koWedstrijden.forEach(m => {
+        const container = containers[m.round];
+        if (!container) return;
+
+        const homeName = m.home ? m.home.land : `Nog onbekend`;
+        const awayName = m.away ? m.away.land : `Nog onbekend`;
+
+        // Special handling for the final and troostfinale cards
+        if (m.round === 'Finale' || m.round === 'Troostfinale') {
+            const isFinal = m.round === 'Finale';
+            const stadiumImg = isFinal ? 'metlife-stadium.jpg' : 'troostfinale.webp';
+            const pillText = isFinal ? 'FINAL' : 'TROOSTFINALE';
+
+            const dateStr = m.datum_tijd ? new Date(m.datum_tijd).toLocaleString('nl-NL', {
+                weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit'
+            }) : 'Tijdstip nog onbekend';
+
+            const html = `
+                <div class="ko-card final-card ko-match" data-match-id="${m.match_id}">
+                    <img src="./pictures/stadions/${stadiumImg}" alt="Stadium" class="final-stadium-img">
+                    
+                    <div class="final-match-content">
+                        <div class="ko-match-layout">
+                            <div class="ko-team-box">
+                                <span class="ko-team-name final-team">${homeName}</span>
+                            </div>
+                            
+                            <div class="ko-vs-container">
+                                <div class="vs-pill">${pillText}</div>
+                                <div class="ko-score-inputs">
+                                    <input type="text" class="ko-score-input score-home" inputmode="numeric" value="${m.goals_home ?? ''}" placeholder="-">
+                                    <input type="text" class="ko-score-input score-away" inputmode="numeric" value="${m.goals_against ?? ''}" placeholder="-">
+                                </div>
+                            </div>
+
+                            <div class="ko-team-box">
+                                <span class="ko-team-name final-team">${awayName}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="final-footer">
+                        📅 ${dateStr}
+                    </div>
+                </div>`;
+            container.insertAdjacentHTML('beforeend', html);
+            return;
+        }
+
+        const html = `
+            <div class="ko-card ko-match" data-match-id="${m.match_id}">
+                <div class="ko-match-layout">
+                    <div class="ko-team-box">
+                        <span class="ko-team-name">${homeName}</span>
+                    </div>
+                    
+                    <div class="ko-vs-container">
+                        <div class="vs-pill">VS</div>
+                        <div class="ko-score-inputs">
+                            <input type="text" class="ko-score-input score-home" inputmode="numeric" value="${m.goals_home ?? ''}" placeholder="-">
+                            <input type="text" class="ko-score-input score-away" inputmode="numeric" value="${m.goals_against ?? ''}" placeholder="-">
+                        </div>
+                    </div>
+
+                    <div class="ko-team-box">
+                        <span class="ko-team-name">${awayName}</span>
+                    </div>
+                </div>
+            </div>`;
+        container.insertAdjacentHTML('beforeend', html);
+    });
+}
+
 function renderCountries(countries) {
     const tbody = document.getElementById('countries-body');
     if (!tbody) return;
@@ -141,11 +227,12 @@ function renderCountries(countries) {
     countries.forEach(c => {
         const row = `
             <tr data-country-id="${c.id}">
-                <td class="text-left"><strong>${c.land}</strong></td>
+                <td><strong>${c.land}</strong></td>
                 <td><input type="checkbox" data-round="laatste_32" ${c.laatste_32 ? 'checked' : ''}></td>
                 <td><input type="checkbox" data-round="laatste_16" ${c.laatste_16 ? 'checked' : ''}></td>
                 <td><input type="checkbox" data-round="kwartfinale" ${c.kwartfinale ? 'checked' : ''}></td>
                 <td><input type="checkbox" data-round="halvefinale" ${c.halvefinale ? 'checked' : ''}></td>
+                <td><input type="checkbox" data-round="troostfinale" ${c.troostfinale ? 'checked' : ''}></td>
                 <td><input type="checkbox" data-round="finale" ${c.finale ? 'checked' : ''}></td>
                 <td><input type="radio" name="winner-admin" data-round="winnaar" ${c.winnaar ? 'checked' : ''} value="${c.id}"></td>
             </tr>`;
@@ -163,9 +250,9 @@ document.getElementById('save-all-btn').addEventListener('click', async () => {
     try {
         await ensureClient();
 
-        // A. Wedstrijden Data
+        // A. Wedstrijden Data (Poulfase)
         const matchUpdates = [];
-        document.querySelectorAll('.match').forEach(m => {
+        document.querySelectorAll('#poule-section .match').forEach(m => {
             const id = m.dataset.matchId;
             const h = m.querySelector('.score-home').value.trim();
             const a = m.querySelector('.score-away').value.trim();
@@ -187,27 +274,52 @@ document.getElementById('save-all-btn').addEventListener('click', async () => {
                 laatste_16: row.querySelector('input[data-round="laatste_16"]').checked,
                 kwartfinale: row.querySelector('input[data-round="kwartfinale"]').checked,
                 halvefinale: row.querySelector('input[data-round="halvefinale"]').checked,
+                troostfinale: row.querySelector('input[data-round="troostfinale"]').checked,
                 finale: row.querySelector('input[data-round="finale"]').checked,
                 winnaar: row.querySelector('input[data-round="winnaar"]').checked
             });
         });
 
-        // C. Voer updates uit via de veilige 'achterdeur' (RPC)
-        const { error } = await supabase.rpc('save_admin_data', {
+        // C. Knock-out Wedstrijden
+        const koUpdates = [];
+        document.querySelectorAll('.ko-match').forEach(m => {
+            const id = m.dataset.matchId;
+            const h = m.querySelector('.score-home').value.trim();
+            const a = m.querySelector('.score-away').value.trim();
+
+            koUpdates.push({
+                match_id: parseInt(id),
+                goals_home: (h === "" || isNaN(parseInt(h))) ? null : parseInt(h),
+                goals_against: (a === "" || isNaN(parseInt(a))) ? null : parseInt(a)
+            });
+        });
+
+        const promises = [];
+
+        // Voer updates uit via de veilige 'achterdeur' (RPC) voor de poulefase en landen
+        promises.push(supabase.rpc('save_admin_data', {
             p_user_id: currentUser.id,
             p_match_updates: matchUpdates,
             p_country_updates: countryUpdates
-        });
+        }));
 
-        if (error) {
-            throw error;
+        // Voer de knock-out updates uit via de nieuwe veilige RPC
+        if (koUpdates.length > 0) {
+            promises.push(supabase.rpc('save_admin_ko_data', {
+                p_user_id: currentUser.id,
+                p_ko_updates: koUpdates
+            }));
         }
+
+        const results = await Promise.all(promises);
+        const error = results.find(r => r.error)?.error;
+        if (error) throw error;
 
         saveMsg.style.color = "green";
         saveMsg.textContent = "✅ Alles succesvol opgeslagen!";
         setTimeout(() => {
             saveMsg.style.color = "var(--text-dim)";
-            saveMsg.textContent = "Pas resultaten aan en klik op alles opslaan hieronder.";
+            saveMsg.textContent = "Pas resultaten aan en klik op opslaan per rij of alles hieronder.";
         }, 3000);
 
     } catch (err) {
@@ -229,10 +341,18 @@ async function init() {
 
         if (mErr) throw mErr;
 
+        const { data: koMatches, error: koErr } = await supabase
+            .from('wedstrijden_knockout')
+            .select(`*, home:landen!home_team_id(land), away:landen!away_team_id(land)`)
+            .order('match_id');
+
+        if (koErr) throw koErr;
+
         const { data: countries, error: cErr } = await supabase.from('landen').select('*').order('land');
         if (cErr) throw cErr;
 
         renderMatches(matches || []);
+        renderKnockoutAdminMatches(koMatches || []);
         renderCountries(countries || []);
     } catch (err) {
         console.error("Fout tijdens init:", err);

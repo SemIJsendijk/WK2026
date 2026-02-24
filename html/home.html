@@ -10,6 +10,10 @@
 		<meta http-equiv="refresh" content="0;url=index.html">
 	</noscript>
 	<style>
+		* {
+			box-sizing: border-box;
+		}
+
 		html {
 			scroll-snap-type: y mandatory;
 			scroll-behavior: smooth;
@@ -20,12 +24,13 @@
 			background: linear-gradient(180deg, #FF7F00 0%, #ffffff 100%);
 			background-attachment: fixed;
 			font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+			overflow-x: hidden;
 		}
 
 		.snap-section {
 			height: 100vh;
 			width: 100%;
-			scroll-snap-align: start;
+			scroll-snap-align: center;
 			display: flex;
 			flex-direction: column;
 			align-items: center;
@@ -35,7 +40,7 @@
 
 		.gif-box {
 			max-width: 95vw;
-			max-height: 80vh;
+			max-height: 90vh;
 			width: 100%;
 			border-radius: 60px;
 			overflow: hidden;
@@ -48,7 +53,7 @@
 			width: 100%;
 			height: auto;
 			display: block;
-			min-height: 60vh;
+			min-height: 70vh;
 			object-fit: contain;
 			border-radius: 60px;
 		}
@@ -93,22 +98,184 @@
 <body>
 	<main>
 		<section class="snap-section">
-			<div class="gif-box">
+			<div class="gif-box" style="margin-top: -60px;">
 				<img src="./pictures/giphy.gif" alt="WK 2026 Animatie" class="gif-placeholder">
 			</div>
 		</section>
 
-		<section class="snap-section">
-			<a href="leaderboard.html" class="success-text stand-link" style="text-decoration: none;">Stand</a>
+		<section class="snap-section split-section">
+			<div class="split-left">
+				<div id="podium-container" class="podium">
+					<!-- Top 3 podium will be injected here -->
+				</div>
+			</div>
+			<div class="split-right">
+				<a href="leaderboard.html" class="success-text stand-link" style="text-decoration: none;">Stand</a>
+			</div>
+		</section>
+
+		<section class="snap-section split-section">
+			<div class="split-left">
+				<a href="voorspellingen.html" class="success-text stand-link"
+					style="text-decoration: none;">Voorspellingen</a>
+			</div>
+			<div class="split-right">
+				<div id="next-game-container" class="next-game">
+					<!-- Upcoming game will be injected here -->
+					<div class="loader">Volgende wedstrijd laden...</div>
+				</div>
+			</div>
 		</section>
 
 		<section class="snap-section">
-			<h2 class="success-text">Succes</h2>
+			<h2 class="success-text">Succes!</h2>
 		</section>
 	</main>
 
 	<style>
+		.split-section {
+			flex-direction: row;
+			justify-content: space-evenly;
+			padding: 0 5%;
+			gap: 40px;
+		}
+
+		.split-left {
+			flex: 1;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			/* Changed from flex-end to center */
+			min-height: 400px;
+		}
+
+		.split-right {
+			flex: 1;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		.podium {
+			display: flex;
+			align-items: flex-end;
+			gap: 15px;
+			padding-bottom: 20px;
+		}
+
+		.podium-item {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			transition: transform 0.3s ease;
+		}
+
+		.podium-item:hover {
+			transform: translateY(-10px);
+		}
+
+		.podium-info {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			margin-bottom: 10px;
+			text-align: center;
+		}
+
+		.podium-name {
+			font-weight: bold;
+			font-size: 1.2rem;
+			color: #333;
+			text-align: center;
+			margin-bottom: 2px;
+			width: 100%;
+			word-wrap: break-word;
+		}
+
+		.podium-points {
+			font-size: 0.9rem;
+			color: #666;
+		}
+
+		.podium-step {
+			width: 120px;
+			border-radius: 15px 15px 0 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+			position: relative;
+		}
+
+		.podium-rank {
+			font-size: 2.5rem;
+		}
+
+		.rank-1 .podium-step {
+			height: 180px;
+			background: linear-gradient(135deg, #FFD700, #FFA500);
+			border: 3px solid #FFD700;
+		}
+
+		.rank-1 .podium-name {
+			font-size: 1.5rem;
+			color: #B8860B;
+		}
+
+		.rank-2 .podium-step {
+			height: 140px;
+			background: linear-gradient(135deg, #C0C0C0, #808080);
+			border: 3px solid #C0C0C0;
+		}
+
+		.rank-3 .podium-step {
+			height: 110px;
+			background: linear-gradient(135deg, #CD7F32, #8B4513);
+			border: 3px solid #CD7F32;
+		}
+
+		@media (max-width: 768px) {
+			.split-section {
+				flex-direction: column-reverse;
+				justify-content: center;
+				padding: 20px;
+				gap: 20px;
+			}
+
+			.split-left {
+				min-height: auto;
+				flex: 0 1 auto;
+			}
+
+			.split-right {
+				flex: 0 1 auto;
+			}
+
+			.podium-step {
+				width: 90px;
+			}
+
+			.podium-name {
+				font-size: 1rem;
+				max-width: 100px;
+			}
+
+			.rank-1 .podium-step {
+				height: 140px;
+			}
+
+			.rank-2 .podium-step {
+				height: 110px;
+			}
+
+			.rank-3 .podium-step {
+				height: 90px;
+			}
+		}
+
 		.stand-link {
+			font-size: clamp(2rem, 8vw, 4.5rem);
+			/* Smaller than the main success-text */
 			transition: transform 0.3s ease, color 0.3s ease;
 			cursor: pointer;
 		}
@@ -116,7 +283,83 @@
 		.stand-link:hover {
 			transform: scale(1.1);
 			color: #0055ff;
-			/* Match the blue from nav buttons on hover */
+		}
+
+		/* Upcoming Game Styles */
+		.next-game {
+			width: 100%;
+			max-width: 450px;
+		}
+
+		.game-card {
+			background: white;
+			border-radius: 20px;
+			padding: 25px;
+			box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+			border: 1px solid rgba(255, 127, 0, 0.2);
+			display: flex;
+			flex-direction: column;
+			gap: 15px;
+		}
+
+		.game-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			font-size: 0.8rem;
+			color: #888;
+			text-transform: uppercase;
+			letter-spacing: 1px;
+			border-bottom: 1px solid #f0f0f0;
+			padding-bottom: 10px;
+		}
+
+		.game-main {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 10px;
+		}
+
+		.game-team {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			text-align: center;
+			gap: 8px;
+		}
+
+		.game-team-name {
+			font-weight: 900;
+			font-size: 1.1rem;
+			color: #333;
+		}
+
+		.game-vs {
+			background: #f8f9fa;
+			color: #adb5bd;
+			padding: 4px 12px;
+			border-radius: 50px;
+			font-size: 0.7rem;
+			font-weight: 800;
+			letter-spacing: 2px;
+			border: 1px solid #eee;
+		}
+
+		.game-footer {
+			background: #fff9f5;
+			padding: 10px;
+			border-radius: 10px;
+			text-align: center;
+			font-size: 0.9rem;
+			font-weight: bold;
+			color: var(--primary);
+		}
+
+		.loader {
+			color: #666;
+			font-style: italic;
 		}
 	</style>
 
@@ -133,6 +376,7 @@
 		</div>
 	</footer>
 
+	<script type="module" src="./js/home.js"></script>
 	<script>
 		// Basic logout logic to clear the saved session and redirect
 		document.getElementById('logout-btn').addEventListener('click', () => {

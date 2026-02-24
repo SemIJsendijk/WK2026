@@ -257,7 +257,7 @@ function renderLandenTabel(landenJson, bestaandeToernooiVoorspellingen) {
         const disHF = lockedHF ? 'disabled title="Kwartfinales zijn al begonnen"' : '';
         const disTF = lockedTF ? 'disabled title="Halve finales zijn al begonnen"' : '';
         const disF = lockedF ? 'disabled title="Halve finales zijn al begonnen"' : '';
-        const disW = lockedWinnaar ? 'disabled title="De Finale is al begonnen"' : '';
+        const disW = lockedWinnaar ? 'disabled title="Halve finales zijn al begonnen"' : '';
 
         const rij = `
             <tr>
@@ -421,7 +421,7 @@ async function laadAlles() {
             'hf': getEarliestTime((koWedstrijden || []).filter(m => m.round === 'Kwartfinale')),
             'tf': getEarliestTime((koWedstrijden || []).filter(m => m.round === 'Halve finale')),
             'f': getEarliestTime((koWedstrijden || []).filter(m => m.round === 'Halve finale')),
-            'winnaar': getEarliestTime((koWedstrijden || []).filter(m => m.round === 'Finale' || m.round === 'Troostfinale'))
+            'winnaar': getEarliestTime((koWedstrijden || []).filter(m => m.round === 'Halve finale'))
         };
 
         renderWedstrijden(wedstrijden || [], v_matches || []);

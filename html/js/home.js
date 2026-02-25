@@ -101,10 +101,46 @@ async function initNextGame() {
                 </div>
             </div>
             <div class="game-footer">
-                📅 ${date}
+                <div>📅 ${date}</div>
+                <div id="countdown-timer" class="game-countdown"></div>
             </div>
         </div>
     `;
+
+    startCountdown(nextGame.datum_tijd);
+}
+
+function startCountdown(targetDate) {
+    const countdownEl = document.getElementById('countdown-timer');
+    if (!countdownEl) return;
+
+    function update() {
+        const now = new Date().getTime();
+        const distance = new Date(targetDate).getTime() - now;
+
+        if (distance < 0) {
+            countdownEl.innerHTML = "BEGONNEN / AFGELOPEN";
+            return;
+        }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        let parts = [];
+        if (days > 0) parts.push(`${days}d`);
+        parts.push(`${hours}u`);
+        parts.push(`${minutes}m`);
+        parts.push(`${seconds}s`);
+
+        countdownEl.innerHTML = `⏳ ${parts.join(' ')}`;
+    }
+
+    // Clear any existing intervals if we refresh
+    if (window.countdownInterval) clearInterval(window.countdownInterval);
+    window.countdownInterval = setInterval(update, 1000);
+    update();
 }
 
 function init() {

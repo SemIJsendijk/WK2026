@@ -124,9 +124,9 @@ function renderWedstrijden(wedstrijdenJson, bestaandeVoorspellingen) {
             const bgStyle = locked ? 'background-color: #f0f0f0; cursor: not-allowed;' : '';
 
             matchHtml += `
-                <div class="match">
+                <div class="match" onclick="window.showMatchStats(${m.match_id}, '${homeName}', '${awayName}')">
                     <span class="team">${homeName}</span>
-                    <div class="inputs">
+                    <div class="inputs" onclick="event.stopPropagation()">
                         <input type="text" inputmode="numeric" pattern="[0-9]*" name="m_${m.match_id}_h" value="${v.voorspeld_thuis ?? ''}" placeholder="-" ${disabledAttr} style="${bgStyle}">
                         <input type="text" inputmode="numeric" pattern="[0-9]*" name="m_${m.match_id}_a" value="${v.voorspeld_uit ?? ''}" placeholder="-" ${disabledAttr} style="${bgStyle}">
                     </div>
@@ -161,6 +161,10 @@ function renderKnockoutWedstrijden(koWedstrijden, bestaandeVoorspellingen) {
         const homeName = m.home ? m.home.land : `Nog onbekend`;
         const awayName = m.away ? m.away.land : `Nog onbekend`;
 
+        const dateStr = m.datum_tijd ? new Date(m.datum_tijd).toLocaleString('nl-NL', {
+            weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit'
+        }) : 'Tijdstip nog onbekend';
+
         let disabledAttr = '';
         if (!isKnown) {
             disabledAttr = 'disabled title="Wordt geopend als landen bekend zijn"';
@@ -174,12 +178,8 @@ function renderKnockoutWedstrijden(koWedstrijden, bestaandeVoorspellingen) {
             const stadiumImg = isFinal ? 'metlife-stadium.jpg' : 'troostfinale.webp';
             const pillText = isFinal ? 'FINAL' : 'TROOSTFINALE';
 
-            const dateStr = m.datum_tijd ? new Date(m.datum_tijd).toLocaleString('nl-NL', {
-                weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit'
-            }) : 'Tijdstip nog onbekend';
-
             const html = `
-                <div class="ko-card final-card">
+                <div class="ko-card final-card" onclick="window.showMatchStats(${m.match_id}, '${homeName}', '${awayName}')">
                     <img src="./pictures/stadions/${stadiumImg}" alt="Stadium" class="final-stadium-img">
                     
                     <div class="final-match-content">
@@ -190,7 +190,7 @@ function renderKnockoutWedstrijden(koWedstrijden, bestaandeVoorspellingen) {
                             
                             <div class="ko-vs-container">
                                 <div class="vs-pill">${pillText}</div>
-                                <div class="ko-score-inputs">
+                                <div class="ko-score-inputs" onclick="event.stopPropagation()">
                                     <input type="text" class="ko-score-input" inputmode="numeric" pattern="[0-9]*" name="m_${m.match_id}_h" value="${v.voorspeld_thuis ?? ''}" placeholder="-" ${disabledAttr}>
                                     <input type="text" class="ko-score-input" inputmode="numeric" pattern="[0-9]*" name="m_${m.match_id}_a" value="${v.voorspeld_uit ?? ''}" placeholder="-" ${disabledAttr}>
                                 </div>
@@ -211,7 +211,7 @@ function renderKnockoutWedstrijden(koWedstrijden, bestaandeVoorspellingen) {
         }
 
         const html = `
-            <div class="ko-card">
+            <div class="ko-card" onclick="window.showMatchStats(${m.match_id}, '${homeName}', '${awayName}')">
                 <div class="ko-match-layout">
                     <div class="ko-team-box">
                         <span class="ko-team-name">${homeName}</span>
@@ -219,7 +219,7 @@ function renderKnockoutWedstrijden(koWedstrijden, bestaandeVoorspellingen) {
                     
                     <div class="ko-vs-container">
                         <div class="vs-pill">VS</div>
-                        <div class="ko-score-inputs">
+                        <div class="ko-score-inputs" onclick="event.stopPropagation()">
                             <input type="text" class="ko-score-input" inputmode="numeric" pattern="[0-9]*" name="m_${m.match_id}_h" value="${v.voorspeld_thuis ?? ''}" placeholder="-" ${disabledAttr}>
                             <input type="text" class="ko-score-input" inputmode="numeric" pattern="[0-9]*" name="m_${m.match_id}_a" value="${v.voorspeld_uit ?? ''}" placeholder="-" ${disabledAttr}>
                         </div>
@@ -228,6 +228,9 @@ function renderKnockoutWedstrijden(koWedstrijden, bestaandeVoorspellingen) {
                     <div class="ko-team-box">
                         <span class="ko-team-name">${awayName}</span>
                     </div>
+                </div>
+                <div class="ko-footer">
+                    📅 ${dateStr}
                 </div>
             </div>`;
         container.insertAdjacentHTML('beforeend', html);
@@ -441,3 +444,106 @@ document.getElementById('logout-btn').addEventListener('click', () => {
 });
 
 laadAlles();
+
+// 8. Match Stats Modal Logica
+function setupModal() {
+    const modal = document.getElementById('stats-modal');
+    const span = document.getElementsByClassName('close-modal')[0];
+
+    if (span) {
+        span.onclick = () => modal.style.display = 'none';
+    }
+
+    window.onclick = (event) => {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+}
+
+window.showMatchStats = async function (matchId, homeName, awayName) {
+    const modal = document.getElementById('stats-modal');
+    const container = document.getElementById('stats-container');
+    const title = document.getElementById('modal-match-title');
+
+    modal.style.display = 'block';
+    title.textContent = `${homeName} vs ${awayName}`;
+    container.innerHTML = '<div class="stats-loading">Gegevens ophalen...</div>';
+
+    try {
+        await ensureClient();
+        const { data, error } = await supabase
+            .from('voorspellingen')
+            .select('voorspeld_thuis, voorspeld_uit')
+            .eq('match_id', matchId);
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+            container.innerHTML = '<div class="stats-total">Nog geen voorspellingen voor deze wedstrijd.</div>';
+            return;
+        }
+
+        let homeWins = 0;
+        let draws = 0;
+        let awayWins = 0;
+        const total = data.length;
+
+        data.forEach(p => {
+            if (p.voorspeld_thuis > p.voorspeld_uit) homeWins++;
+            else if (p.voorspeld_thuis < p.voorspeld_uit) awayWins++;
+            else draws++;
+        });
+
+        const homePerc = Math.round((homeWins / total) * 100);
+        const drawPerc = Math.round((draws / total) * 100);
+        const awayPerc = Math.round((awayWins / total) * 100);
+
+        container.innerHTML = `
+            <div class="stats-row">
+                <div class="stats-label">
+                    <span>${homeName} wint</span>
+                    <span>${homePerc}% (${homeWins})</span>
+                </div>
+                <div class="stats-bar-bg">
+                    <div class="stats-bar-fill bg-home" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="stats-row">
+                <div class="stats-label">
+                    <span>Gelijkspel</span>
+                    <span>${drawPerc}% (${draws})</span>
+                </div>
+                <div class="stats-bar-bg">
+                    <div class="stats-bar-fill bg-draw" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="stats-row">
+                <div class="stats-label">
+                    <span>${awayName} wint</span>
+                    <span>${awayPerc}% (${awayWins})</span>
+                </div>
+                <div class="stats-bar-bg">
+                    <div class="stats-bar-fill bg-away" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="stats-total">Totaal aantal voorspellingen: ${total}</div>
+        `;
+
+        // Animeren van de balken
+        setTimeout(() => {
+            const fills = container.querySelectorAll('.stats-bar-fill');
+            if (fills.length >= 3) {
+                fills[0].style.width = homePerc + '%';
+                fills[1].style.width = drawPerc + '%';
+                fills[2].style.width = awayPerc + '%';
+            }
+        }, 100);
+
+    } catch (err) {
+        console.error("Fout bij ophalen statistieken:", err);
+        container.innerHTML = `<div style="color:red">Fout bij laden: ${err.message}</div>`;
+    }
+}
+
+setupModal();

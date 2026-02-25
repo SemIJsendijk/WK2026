@@ -31,6 +31,42 @@
         }
 
         /* Brons */
+        .leaderboard-name {
+            cursor: pointer;
+            color: #000000;
+            font-weight: 600;
+        }
+
+        .leaderboard-name:hover {
+            text-decoration: underline;
+        }
+
+        .prediction-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .prediction-teams {
+            font-weight: 600;
+        }
+
+        .prediction-score {
+            font-family: monospace;
+            background: #f0f0f0;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .locked-msg {
+            color: var(--text-dim);
+            font-style: italic;
+            font-size: 0.85rem;
+            margin-top: 15px;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -68,6 +104,18 @@
             </table>
         </div>
     </main>
+
+    <!-- Predictions Modal -->
+    <div id="predictions-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 id="modal-user-title">Voorspellingen</h2>
+            <div id="predictions-container">
+                <div class="stats-loading">Laden...</div>
+            </div>
+            <p class="locked-msg">Alleen gestarte wedstrijden zijn zichtbaar.</p>
+        </div>
+    </div>
 
     <script type="module">
         import { fetchLeaderboard, renderLeaderboard, subscribeToUpdates } from './js/leaderboard.js';

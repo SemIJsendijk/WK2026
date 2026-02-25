@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="nl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WK 2026 - Uitleg</title>
+    <link rel="stylesheet" href="./css/header.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF7F00;
+            --primary-dark: #cc6600;
+            --secondary: #0055ff;
+            --text: #1a1a1a;
+            --text-light: #666;
+            --bg: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --border: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #FF7F00 0%, #ffffff 100%);
+            background-attachment: fixed;
+            color: var(--text);
+            line-height: 1.6;
+            padding-bottom: 100px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            margin: 0;
+            background: linear-gradient(to right, #FF7F00, #0055ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 10px auto;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px rgba(255, 127, 0, 0.1);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--primary);
+            text-transform: uppercase;
+        }
+
+        .section-title i {
+            font-style: normal;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .info-item {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 127, 0, 0.1);
+        }
+
+        .info-item h3 {
+            margin-top: 0;
+            color: var(--secondary);
+            font-size: 1.2rem;
+        }
+
+        .btn-back {
+            display: inline-block;
+            margin-top: 40px;
+            padding: 15px 40px;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(255, 127, 0, 0.3);
+        }
+
+        .btn-back:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(255, 127, 0, 0.4);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .highlight {
+            color: var(--primary);
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="hero">
+            <h1>Hoe werkt het?</h1>
+            <p>Ontdek alle mogelijkheden van de Sluurmans' WK 2026 Poule</p>
+        </div>
+
+        <div class="card">
+            <div class="section-title"><i>⚽</i> Wedstrijden & Voorspellingen</div>
+            <p>
+                In het menu <span class="highlight">Voorspellingen</span> kun je jouw scores voor alle wedstrijden
+                invullen.
+                Let op: je kunt je voorspelling aanpassen tot <span class="highlight">5 minuten voor aanvang</span> van
+                de wedstrijd.
+            </p>
+            <div class="info-grid">
+                <div class="info-item">
+                    <h3>Klik op een wedstrijd</h3>
+                    <p>Wist je dat je op een wedstrijdkaart kunt klikken? Je ziet dan direct de statistieken van de hele
+                        groep: hoeveel mensen voorspellen winst, verlies of gelijkspel!</p>
+                </div>
+                <div class="info-item">
+                    <h3>Toernooiverloop</h3>
+                    <p>Op de tab "Verloop" voorspel je welke landen per ronde doorgaan. Dit telt zwaar mee in de punten!
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="section-title"><i>🏆</i> Leaderboard & Spelers</div>
+            <p>
+                In het <span class="highlight">Leaderboard</span> zie je de actuele stand. Het is meer dan alleen een
+                lijst met namen!
+            </p>
+            <div class="info-grid">
+                <div class="info-item">
+                    <h3>Bekijk je rivalen</h3>
+                    <p>Klik op de <span class="highlight">naam van een speler</span> in de lijst om hun voorspellingen
+                        te bekijken. </p>
+                </div>
+                <div class="info-item">
+                    <h3>Anti-Spiek</h3>
+                    <p>Je kunt de voorspellingen van anderen pas zien zodra de betreffende wedstrijd is <span
+                            class="highlight">begonnen</span>. Zo kan niemand je tactiek kopiëren!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="section-title"><i>📊</i> Puntenverdeling</div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <h3>Correcte Score</h3>
+                    <p>De maximale punten voor het exact goed voorspellen van de uitslag.</p>
+                </div>
+                <div class="info-item">
+                    <h3>Toto (1x2)</h3>
+                    <p>Punten voor het goed voorspellen van de winnaar of een gelijkspel, ook als de score niet exact
+                        klopt.</p>
+                </div>
+                <div class="info-item">
+                    <h3>Bonuspunten</h3>
+                    <p>Extra punten voor het juist voorspellen van landen die de volgende rondes bereiken en de
+                        uiteindelijke kampioen.</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="home.html" class="btn-back">Terug naar Home</a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="header-container header-flex">
+            <a href="home.html" class="header-brand">
+                <h1>WK 2026 <span>Info</span></h1>
+            </a>
+            <div class="header-nav">
+                <a href="leaderboard.html" class="btn-nav">Leaderboard</a>
+                <a href="voorspellingen.html" class="btn-nav">Voorspellingen</a>
+                <a href="account.html" class="btn-nav">Mijn Account</a>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

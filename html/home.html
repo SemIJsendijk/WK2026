@@ -133,10 +133,34 @@
 
 		<section class="snap-section">
 			<h2 class="success-text">Succes!</h2>
+			<div style="margin-top: 50px;">
+				<a href="info.html" class="info-btn">Hoe werkt het?</a>
+			</div>
 		</section>
 	</main>
 
 	<style>
+		.info-btn {
+			padding: 15px 40px;
+			background: white;
+			color: var(--primary);
+			text-decoration: none;
+			border-radius: 50px;
+			font-weight: 900;
+			font-size: 1.2rem;
+			text-transform: uppercase;
+			transition: all 0.3s ease;
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+			border: 2px solid var(--primary);
+		}
+
+		.info-btn:hover {
+			background: var(--primary);
+			color: white;
+			transform: scale(1.05);
+			box-shadow: 0 15px 40px rgba(255, 127, 0, 0.4);
+		}
+
 		.split-section {
 			flex-direction: row;
 			justify-content: space-evenly;

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="nl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WK 2026 - Groepsstanden</title>
+    <link rel="stylesheet" href="./css/voorspellingen.css">
+    <link rel="stylesheet" href="./css/header.css">
+    <style>
+        .standings-container {
+            max-width: 95%;
+            margin: 40px auto;
+            padding-bottom: 100px;
+        }
+
+        .groups-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 1100px) {
+            .groups-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .groups-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .group-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 127, 0, 0.1);
+        }
+
+        .group-title {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #fff5ed;
+            padding-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .standings-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .standings-table th {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            padding: 10px 5px;
+            border-bottom: 1px solid #f0f0f0;
+            text-align: center;
+            /* Alles standaard centreren */
+        }
+
+        .standings-table th:nth-child(2),
+        .standings-table td:nth-child(2) {
+            text-align: left;
+            /* Alleen teamnaam links */
+        }
+
+        .standings-table td {
+            padding: 12px 5px;
+            border-bottom: 1px solid #fafafa;
+            font-size: 0.95rem;
+            text-align: center;
+            /* Cellen ook standaard centreren */
+        }
+
+        .col-pts {
+            font-weight: 800;
+            color: #333;
+        }
+
+        .col-team {
+            font-weight: 600;
+        }
+
+        .col-num {
+            color: #666;
+            min-width: 40px;
+        }
+
+        .rank-qualified {
+            border-left: 4px solid #00ff87;
+        }
+
+        .rank-qualified-32 {
+            border-left: 4px solid #ffcc00;
+        }
+
+        .rank-eliminated {
+            border-left: 4px solid #ff4d4d;
+            opacity: 0.8;
+        }
+
+        .stats-legend {
+            display: flex;
+            gap: 15px;
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .legend-item b {
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-container header-flex">
+            <a href="home.html" class="header-brand">
+                <h1>WK 2026 <span>Groepsstanden</span></h1>
+            </a>
+            <div class="header-nav">
+                <a href="voorspellingen.html" class="btn-nav">Voorspellingen</a>
+                <a href="leaderboard.html" class="btn-nav">Leaderboard</a>
+                <a href="account.html" class="btn-nav">Mijn Account</a>
+                <button id="logout-btn" class="btn-nav btn-logout">Uitloggen</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container standings-container">
+        <h2 class="section-title">Groepsstanden</h2>
+
+        <div id="groups-container" class="groups-grid">
+            <div class="loader">Standen ophalen...</div>
+        </div>
+
+        <div class="stats-legend">
+            <div class="legend-item"><b>G</b> Gespeeld</div>
+            <div class="legend-item"><b>W</b> Winst</div>
+            <div class="legend-item"><b>G</b> Gelijk</div>
+            <div class="legend-item"><b>V</b> Verlies</div>
+            <div class="legend-item"><b>+/-</b> Doelsaldo</div>
+            <div class="legend-item"><b>Pnt</b> Punten</div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="header-container header-flex">
+            <a href="home.html" class="header-brand">
+                <h1>WK 2026 <span>Groepsstanden</span></h1>
+            </a>
+            <div class="header-nav">
+                <a href="voorspellingen.html" class="btn-nav">Voorspellingen</a>
+                <a href="leaderboard.html" class="btn-nav">Leaderboard</a>
+                <a href="account.html" class="btn-nav">Mijn Account</a>
+                <button id="logout-btn" class="btn-nav btn-logout">Uitloggen</button>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="./js/standings.js"></script>
+    <script>
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.removeItem('currentUser');
+            window.location.href = './index.html';
+        });
+    </script>
+</body>
+
+</html>

@@ -329,6 +329,96 @@ document.getElementById('save-all-btn').addEventListener('click', async () => {
     }
 });
 
+// 5b. Aankondigingen Functies
+async function renderAdminAnnouncements() {
+    const list = document.getElementById('admin-announcements-list');
+    if (!list) return;
+
+    try {
+        const { data, error } = await supabase
+            .from('aankondigingen')
+            .select('*')
+            .order('datum_tijd', { ascending: false });
+
+        if (error) throw error;
+        list.innerHTML = '';
+
+        if (!data || data.length === 0) {
+            list.innerHTML = '<p>Geen aankondigingen gevonden.</p>';
+            return;
+        }
+
+        data.forEach(ann => {
+            const date = new Date(ann.datum_tijd).toLocaleString('nl-NL');
+            const item = document.createElement('div');
+            item.className = 'card';
+            item.style.marginBottom = '15px';
+            item.style.borderLeft = ann.is_active ? '5px solid green' : '5px solid gray';
+
+            item.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                        <h4 style="margin: 0; color: var(--primary);">${ann.titel}</h4>
+                        <small style="color: gray;">${date}</small>
+                    </div>
+                    <div>
+                        <button class="save-btn-small" onclick="toggleAnnouncement('${ann.id}', ${!ann.is_active})">
+                            ${ann.is_active ? 'Deactiveren' : 'Activeren'}
+                        </button>
+                        <button class="save-btn-small" style="background: red;" onclick="deleteAnnouncement('${ann.id}')">Verwijderen</button>
+                    </div>
+                </div>
+                <div style="margin-top: 10px; white-space: pre-wrap;">${ann.inhoud}</div>
+            `;
+            list.appendChild(item);
+        });
+    } catch (err) {
+        console.error("Error rendering admin announcements:", err);
+        list.innerHTML = '<p style="color: red;">Fout bij laden.</p>';
+    }
+}
+
+window.deleteAnnouncement = async function (id) {
+    if (!confirm('Weet je zeker dat je deze aankondiging wilt verwijderen?')) return;
+    try {
+        const { error } = await supabase.from('aankondigingen').delete().eq('id', id);
+        if (error) throw error;
+        renderAdminAnnouncements();
+    } catch (err) {
+        alert("Verwijderen mislukt: " + err.message);
+    }
+}
+
+window.toggleAnnouncement = async function (id, newState) {
+    try {
+        const { error } = await supabase.from('aankondigingen').update({ is_active: newState }).eq('id', id);
+        if (error) throw error;
+        renderAdminAnnouncements();
+    } catch (err) {
+        alert("Bijwerken mislukt: " + err.message);
+    }
+}
+
+document.getElementById('announcement-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const title = document.getElementById('ann-title').value.trim();
+    const content = document.getElementById('ann-content').value.trim();
+
+    try {
+        const { error } = await supabase.from('aankondigingen').insert([
+            { titel: title, inhoud: content, user_id: currentUser.id }
+        ]);
+
+        if (error) throw error;
+
+        document.getElementById('announcement-form').reset();
+        alert("✅ Aankondiging geplaatst!");
+        renderAdminAnnouncements();
+    } catch (err) {
+        alert("Plaatsen mislukt: " + err.message);
+    }
+});
+
 // 6. Initialisatie
 async function init() {
     try {
@@ -354,6 +444,7 @@ async function init() {
         renderMatches(matches || []);
         renderKnockoutAdminMatches(koMatches || []);
         renderCountries(countries || []);
+        renderAdminAnnouncements();
     } catch (err) {
         console.error("Fout tijdens init:", err);
     }

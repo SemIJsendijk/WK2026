@@ -143,14 +143,51 @@ function startCountdown(targetDate) {
     update();
 }
 
+async function initLatestAnnouncement() {
+    const preview = document.getElementById('latest-announcement-preview');
+    if (!preview) return;
+
+    try {
+        await ensureClient();
+        const { data, error } = await supabase
+            .from('aankondigingen')
+            .select('*')
+            .eq('is_active', true)
+            .order('datum_tijd', { ascending: false })
+            .limit(1);
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+            preview.style.display = 'none';
+            return;
+        }
+
+        const ann = data[0];
+        preview.style.display = 'block';
+        preview.innerHTML = `
+            <div style="background: white; border-radius: 30px; padding: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border: 2px solid var(--primary);">
+                <span style="font-size: 0.9rem; color: #888; text-transform: uppercase; letter-spacing: 2px;">Laatste Aankondiging</span>
+                <h2 style="color: var(--primary); margin: 15px 0; font-family: Outfit, sans-serif; font-weight: 900; font-size: 2.5rem;">${ann.titel}</h2>
+                <p style="font-size: 1.2rem; color: #444; margin-bottom: 20px; line-height: 1.5; max-height: 120px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">${ann.inhoud}</p>
+                <a href="aankondigingen.html" style="color: #0055ff; font-weight: 800; text-decoration: none; border-bottom: 2px solid #0055ff;">Lees meer...</a>
+            </div>
+        `;
+    } catch (err) {
+        console.error("Error loading latest announcement:", err);
+    }
+}
+
 function init() {
     initPodium();
     initNextGame();
+    initLatestAnnouncement();
 
     // Refresh periodically or on update
     subscribeToUpdates(() => {
         initPodium();
         initNextGame();
+        initLatestAnnouncement();
     });
 }
 

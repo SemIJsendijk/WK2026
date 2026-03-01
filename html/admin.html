@@ -72,6 +72,7 @@
             <button class="tab-btn" onclick="showTab('tf')">🥉 Troostfinale</button>
             <button class="tab-btn" onclick="showTab('fin')">🏆 Finale</button>
             <button class="tab-btn" onclick="showTab('countries')">🗺️ Landen</button>
+            <button class="tab-btn" onclick="showTab('announcements')">📢 Aankondigingen</button>
         </div>
     </div>
 
@@ -131,6 +132,26 @@
                     <tbody id="countries-body">
                     </tbody>
                 </table>
+            </div>
+        </div>
+
+        <div id="announcements-section" class="tab-content">
+            <h2 class="section-title">Aankondigingen Beheren</h2>
+            <div class="card">
+                <h3>Nieuwe Aankondiging</h3>
+                <form id="announcement-form"
+                    style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">
+                    <input type="text" id="ann-title" placeholder="Titel" required
+                        style="padding: 15px; border-radius: 12px; border: 1px solid var(--border); font-size: 1.5rem; font-weight: 800; color: var(--primary); width: 100%; box-sizing: border-box;">
+                    <textarea id="ann-content" placeholder="Inhoud..." required
+                        style="padding: 10px; border-radius: 8px; border: 1px solid var(--border); min-height: 150px; font-family: inherit; width: 100%; box-sizing: border-box;"></textarea>
+                    <button type="submit" class="btn-save" style="width: 200px;">Plaatsen</button>
+                </form>
+            </div>
+
+            <h3 style="margin-top: 30px;">Bestaande Aankondigingen</h3>
+            <div id="admin-announcements-list" style="margin-top: 15px;">
+                <div class="loading-spinner">Laden...</div>
             </div>
         </div>
     </main>

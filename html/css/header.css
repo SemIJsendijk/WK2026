@@ -86,3 +86,26 @@ footer {
 .btn-logout:hover {
     background: #e67300;
 }
+
+@media (max-width: 768px) {
+    .header-container {
+        padding: 0 20px;
+    }
+
+    .header-flex {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .header-nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-nav {
+        width: calc(50% - 6px);
+        min-width: 120px;
+        font-size: 0.8rem;
+    }
+}

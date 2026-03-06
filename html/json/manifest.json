@@ -1,0 +1,21 @@
+{
+  "name": "WK 2026 Poule",
+  "short_name": "WK 2026",
+  "start_url": "../index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#FF7F00",
+  "description": "Voorspel het WK 2026 en word de kampioen van de poule!",
+  "icons": [
+    {
+      "src": "../pictures/johancruijff.jpeg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "../pictures/johancruijff.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

@@ -106,3 +106,25 @@ body {
     background: rgba(0, 0, 0, 0.25);
     border-radius: 8px
 }
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .image-section {
+        min-height: 30vh;
+        flex: 0 0 30vh;
+    }
+
+    .login-section {
+        flex: 1;
+        padding: 2rem 1rem;
+        align-items: flex-start;
+    }
+
+    .login-box {
+        width: 100%;
+        max-width: 380px;
+    }
+}

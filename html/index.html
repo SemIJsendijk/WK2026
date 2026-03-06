@@ -28,6 +28,16 @@
             flex: 1;
         }
     </style>
+
+    <link rel="manifest" href="./json/manifest.json">
+    <meta name="theme-color" content="#FF7F00">
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./js/sw.js', { scope: '../' }).catch(err => console.log('SW ref fail', err));
+            });
+        }
+    </script>
 </head>
 <body>
     <div class="main-content">

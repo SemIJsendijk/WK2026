@@ -598,3 +598,61 @@ input[type="text"]:focus {
     background: rgba(0, 255, 135, 0.1);
     color: #008f4c;
 }
+
+@media (max-width: 768px) {
+    .group-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 15px;
+    }
+
+    .team {
+        width: 30%;
+        font-size: 0.85rem;
+    }
+
+    .inputs input[type="text"] {
+        width: 35px;
+    }
+
+    .ko-card {
+        padding: 15px;
+    }
+
+    .ko-team-name {
+        font-size: 0.95rem;
+    }
+
+    .ko-score-input {
+        width: 40px !important;
+        height: 40px !important;
+        font-size: 1.2rem !important;
+    }
+
+    .final-stadium-img {
+        height: 200px;
+    }
+
+    .final-match-content {
+        padding: 20px;
+    }
+
+    .final-team {
+        font-size: 1.2rem !important;
+    }
+
+    .tab-nav .container {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 5px;
+    }
+
+    .save-flex {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .btn-save {
+        width: 100%;
+    }
+}

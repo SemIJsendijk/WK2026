@@ -1,2 +1,16 @@
 /js/sw.js
   Service-Worker-Allowed: /
+
+# Cache static assets for 1 day
+/**/*.css
+  Cache-Control: public, max-age=86400
+/**/*.js
+  Cache-Control: public, max-age=86400
+/**/*.gif
+  Cache-Control: public, max-age=86400
+/**/*.png
+  Cache-Control: public, max-age=86400
+/**/*.jpg
+  Cache-Control: public, max-age=86400
+/**/*.webp
+  Cache-Control: public, max-age=86400

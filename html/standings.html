@@ -118,6 +118,117 @@
         .legend-item b {
             color: #333;
         }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 30px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            position: relative;
+            animation: modalSlide 0.3s ease-out;
+        }
+
+        @keyframes modalSlide {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 25px;
+            top: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-modal:hover {
+            color: var(--primary);
+        }
+
+        .results-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .result-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #eee;
+        }
+
+        .result-teams {
+            flex: 1;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .result-score {
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-weight: 800;
+            font-family: monospace;
+            font-size: 1.1rem;
+            margin-left: 15px;
+        }
+
+        .result-row-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-round {
+            font-size: 0.7rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .clickable-row {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .clickable-row:hover {
+            background-color: #fff9f5 !important;
+        }
     </style>
 
     <link rel="manifest" href="./json/manifest.json">
@@ -163,6 +274,19 @@
             <div class="legend-item"><b>Pnt</b> Punten</div>
         </div>
     </main>
+
+    <!-- Results Modal -->
+    <div id="results-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="result-row-info">
+                <h2 id="modal-country-title" style="color: var(--primary); margin-bottom: 5px;">Land Resultaten</h2>
+            </div>
+            <div id="results-container" class="results-list">
+                <!-- Results will be injected here -->
+            </div>
+        </div>
+    </div>
 
     <footer>
         <div class="header-container header-flex">

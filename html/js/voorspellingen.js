@@ -394,42 +394,53 @@ async function laadAlles() {
         const statusEl = document.getElementById('auth-status');
         if (statusEl) statusEl.textContent = `Speler: ${currentUser.email}`;
 
-        const { data: wedstrijden, error: wError } = await supabase
-            .from('wedstrijden_poulfase')
-            .select(`*, home:landen!home_team_id(land, groep), away:landen!away_team_id(land)`)
-            .order('match_id');
-        if (wError) throw wError;
+        // Grouping all initial fetches into one Promise.all
+        const [pouleRes, koRes, landenRes, vMatchesRes, vToernooiRes] = await Promise.all([
+            supabase.from('wedstrijden_poulfase')
+                .select(`*, home:landen!home_team_id(land, groep), away:landen!away_team_id(land)`)
+                .order('match_id'),
+            supabase.from('wedstrijden_knockout')
+                .select(`*, home:landen!home_team_id(land), away:landen!away_team_id(land)`)
+                .order('match_id'),
+            supabase.from('landen')
+                .select('*')
+                .order('land'),
+            supabase.from('voorspellingen')
+                .select('*')
+                .eq('user_id', currentUser.id),
+            supabase.from('voorspellingen_toernooi')
+                .select('*')
+                .eq('user_id', currentUser.id)
+        ]);
 
-        const { data: koWedstrijden, error: koError } = await supabase
-            .from('wedstrijden_knockout')
-            .select(`*, home:landen!home_team_id(land), away:landen!away_team_id(land)`)
-            .order('match_id');
-        if (koError) throw koError;
+        if (pouleRes.error) throw pouleRes.error;
+        if (koRes.error) throw koRes.error;
+        if (landenRes.error) throw landenRes.error;
 
-        const { data: landen, error: lError } = await supabase.from('landen').select('*').order('land');
-        if (lError) throw lError;
-
-        const { data: v_matches } = await supabase.from('voorspellingen').select('*').eq('user_id', currentUser.id);
-        const { data: v_toernooi } = await supabase.from('voorspellingen_toernooi').select('*').eq('user_id', currentUser.id);
+        const wedstrijden = pouleRes.data || [];
+        const koWedstrijden = koRes.data || [];
+        const landen = landenRes.data || [];
+        const v_matches = vMatchesRes.data || [];
+        const v_toernooi = vToernooiRes.data || [];
 
         // Gegevens bewaren voor de anti-cheat controles
-        alleWedstrijden = [...(wedstrijden || []), ...(koWedstrijden || [])];
-        huidigeToernooiVoorspellingen = v_toernooi || [];
+        alleWedstrijden = [...wedstrijden, ...koWedstrijden];
+        huidigeToernooiVoorspellingen = v_toernooi;
 
         // Bepaal de deadlines aan de hand van de allereerste wedstrijd van iedere specifieke ronde
         toernooiDeadlines = {
-            '32': getEarliestTime(wedstrijden || []),
-            '16': getEarliestTime((koWedstrijden || []).filter(m => m.round === 'Laatste 32')),
-            'kf': getEarliestTime((koWedstrijden || []).filter(m => m.round === 'Laatste 16')),
-            'hf': getEarliestTime((koWedstrijden || []).filter(m => m.round === 'Kwartfinale')),
-            'tf': getEarliestTime((koWedstrijden || []).filter(m => m.round === 'Halve finale')),
-            'f': getEarliestTime((koWedstrijden || []).filter(m => m.round === 'Halve finale')),
-            'winnaar': getEarliestTime((koWedstrijden || []).filter(m => m.round === 'Halve finale'))
+            '32': getEarliestTime(wedstrijden),
+            '16': getEarliestTime(koWedstrijden.filter(m => m.round === 'Laatste 32')),
+            'kf': getEarliestTime(koWedstrijden.filter(m => m.round === 'Laatste 16')),
+            'hf': getEarliestTime(koWedstrijden.filter(m => m.round === 'Kwartfinale')),
+            'tf': getEarliestTime(koWedstrijden.filter(m => m.round === 'Halve finale')),
+            'f': getEarliestTime(koWedstrijden.filter(m => m.round === 'Halve finale')),
+            'winnaar': getEarliestTime(koWedstrijden.filter(m => m.round === 'Halve finale'))
         };
 
-        renderWedstrijden(wedstrijden || [], v_matches || []);
-        renderKnockoutWedstrijden(koWedstrijden || [], v_matches || []);
-        renderLandenTabel(landen || [], v_toernooi || []);
+        renderWedstrijden(wedstrijden, v_matches);
+        renderKnockoutWedstrijden(koWedstrijden, v_matches);
+        renderLandenTabel(landen, v_toernooi);
 
     } catch (err) {
         console.error("Laden mislukt:", err);

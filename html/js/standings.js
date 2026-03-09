@@ -171,7 +171,7 @@ function renderStandings(stats) {
             }
 
             tableHtml += `
-                <tr class="${rowClass}">
+                <tr class="${rowClass} clickable-row" onclick="window.showCountryResults(${t.id}, '${t.land}')">
                     <td class="col-num">${index + 1}</td>
                     <td class="col-team">${t.land}</td>
                     <td class="col-num">${t.gespeeld}</td>
@@ -194,10 +194,84 @@ function renderStandings(stats) {
     });
 }
 
+// Country results modal logic
+window.showCountryResults = async function (countryId, countryName) {
+    const modal = document.getElementById('results-modal');
+    const container = document.getElementById('results-container');
+    const title = document.getElementById('modal-country-title');
+
+    modal.style.display = 'block';
+    title.textContent = `Resultaten van ${countryName}`;
+    container.innerHTML = '<div class="stats-loading">Laden...</div>';
+
+    try {
+        await ensureClient();
+
+        // 1. Fetch matches from both tables
+        const [pouleRes, koRes] = await Promise.all([
+            supabase.from('wedstrijden_poulfase')
+                .select('*, home:landen!home_team_id(land), away:landen!away_team_id(land)')
+                .or(`home_team_id.eq.${countryId},away_team_id.eq.${countryId}`),
+            supabase.from('wedstrijden_knockout')
+                .select('*, home:landen!home_team_id(land), away:landen!away_team_id(land)')
+                .or(`home_team_id.eq.${countryId},away_team_id.eq.${countryId}`)
+        ]);
+
+        const allMatches = [...(pouleRes.data || []), ...(koRes.data || [])];
+
+        // 2. Filter for matches that have a result
+        const playedMatches = allMatches.filter(m => m.goals_home !== null && m.goals_against !== null)
+            .sort((a, b) => new Date(b.datum_tijd) - new Date(a.datum_tijd));
+
+        if (playedMatches.length === 0) {
+            container.innerHTML = '<div style="padding: 20px; text-align: center; color: #888;">Nog geen gespeelde wedstrijden gevonden voor dit land.</div>';
+            return;
+        }
+
+        container.innerHTML = playedMatches.map(m => {
+            const homeName = m.home?.land || 'Thuis';
+            const awayName = m.away?.land || 'Uit';
+            const round = m.round || 'Poulefase';
+
+            return `
+                <div class="result-item">
+                    <div class="result-row-info">
+                        <span class="result-round">${round}</span>
+                        <span class="result-teams">${homeName} - ${awayName}</span>
+                    </div>
+                    <span class="result-score">${m.goals_home} - ${m.goals_against}</span>
+                </div>
+            `;
+        }).join('');
+
+    } catch (err) {
+        console.error("Fout bij laden resultaten:", err);
+        container.innerHTML = `<div style="color:red; padding: 20px;">Fout bij laden: ${err.message}</div>`;
+    }
+}
+
+// Modal closing logic
+function setupModal() {
+    const modal = document.getElementById('results-modal');
+    if (!modal) return;
+    const span = modal.querySelector('.close-modal');
+
+    if (span) {
+        span.onclick = () => modal.style.display = 'none';
+    }
+
+    window.onclick = (event) => {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+}
+
 async function init() {
     try {
         const stats = await fetchStats();
         renderStandings(stats);
+        setupModal();
     } catch (err) {
         console.error(err);
         const container = document.getElementById('groups-container');

@@ -10,50 +10,12 @@ async function ensureClient() {
     return supabase;
 }
 
-async function initPodium() {
-    const data = await fetchLeaderboard();
-    const podiumContainer = document.getElementById('podium-container');
-    if (!podiumContainer) return;
-
-    if (!data || data.length === 0) {
-        podiumContainer.innerHTML = '<p>Geen scores beschikbaar</p>';
-        return;
-    }
-
-    const top3 = data.slice(0, 3);
-    const displayOrder = [];
-    if (top3[1]) displayOrder.push(top3[1]);
-    if (top3[0]) displayOrder.push(top3[0]);
-    if (top3[2]) displayOrder.push(top3[2]);
-
-    podiumContainer.innerHTML = displayOrder.map((player) => {
-        const rank = data.indexOf(player) + 1;
-        let rankClass = `rank-${rank}`;
-        let medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : '🥉';
-
-        return `
-            <div class="podium-item ${rankClass}">
-                <div class="podium-info">
-                    <span class="podium-name">${player.speler_naam || 'Anoniem'}</span>
-                    <span class="podium-points">${player.totaal_punten} pts</span>
-                </div>
-                <div class="podium-step">
-                    <span class="podium-rank">${medal}</span>
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
-async function initNextGame() {
-    const container = document.getElementById('next-game-container');
-    if (!container) return;
-
+async function loadHomeData() {
     await ensureClient();
     const now = new Date().toISOString();
 
-    // Fetch from both tables
-    const [pouleRes, koRes] = await Promise.all([
+    const [leaderboard, pouleRes, koRes, announcements] = await Promise.all([
+        fetchLeaderboard(),
         supabase.from('wedstrijden_poulfase')
             .select('*, home:landen!home_team_id(land), away:landen!away_team_id(land)')
             .gt('datum_tijd', now)
@@ -63,51 +25,111 @@ async function initNextGame() {
             .select('*, home:landen!home_team_id(land), away:landen!away_team_id(land)')
             .gt('datum_tijd', now)
             .order('datum_tijd', { ascending: true })
+            .limit(1),
+        supabase.from('aankondigingen')
+            .select('*')
+            .eq('is_active', true)
+            .order('datum_tijd', { ascending: false })
             .limit(1)
     ]);
 
-    let nextGame = null;
-    const pGame = pouleRes.data?.[0];
-    const kGame = koRes.data?.[0];
+    return {
+        leaderboard,
+        nextPouleGame: pouleRes.data?.[0],
+        nextKoGame: koRes.data?.[0],
+        announcement: announcements.data?.[0]
+    };
+}
 
-    if (pGame && kGame) {
-        nextGame = new Date(pGame.datum_tijd) < new Date(kGame.datum_tijd) ? pGame : kGame;
-    } else {
-        nextGame = pGame || kGame;
+function renderHome(data) {
+    // 1. Render Podium
+    const podiumContainer = document.getElementById('podium-container');
+    if (podiumContainer) {
+        if (!data.leaderboard || data.leaderboard.length === 0) {
+            podiumContainer.innerHTML = '<p>Geen scores beschikbaar</p>';
+        } else {
+            const top3 = data.leaderboard.slice(0, 3);
+            const displayOrder = [];
+            if (top3[1]) displayOrder.push(top3[1]);
+            if (top3[0]) displayOrder.push(top3[0]);
+            if (top3[2]) displayOrder.push(top3[2]);
+
+            podiumContainer.innerHTML = displayOrder.map((player) => {
+                const rank = data.leaderboard.indexOf(player) + 1;
+                let medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : '🥉';
+                return `
+                    <div class="podium-item rank-${rank}">
+                        <div class="podium-info">
+                            <span class="podium-name">${player.speler_naam || 'Anoniem'}</span>
+                            <span class="podium-points">${player.totaal_punten} pts</span>
+                        </div>
+                        <div class="podium-step">
+                            <span class="podium-rank">${medal}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
     }
 
-    if (!nextGame) {
-        container.innerHTML = '<p>Geen aankomende wedstrijden</p>';
-        return;
+    // 2. Render Next Game
+    const gameContainer = document.getElementById('next-game-container');
+    if (gameContainer) {
+        let nextGame = null;
+        if (data.nextPouleGame && data.nextKoGame) {
+            nextGame = new Date(data.nextPouleGame.datum_tijd) < new Date(data.nextKoGame.datum_tijd) ? data.nextPouleGame : data.nextKoGame;
+        } else {
+            nextGame = data.nextPouleGame || data.nextKoGame;
+        }
+
+        if (!nextGame) {
+            gameContainer.innerHTML = '<p>Geen aankomende wedstrijden</p>';
+        } else {
+            const date = new Date(nextGame.datum_tijd).toLocaleString('nl-NL', {
+                weekday: 'long', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
+            });
+            gameContainer.innerHTML = `
+                <div class="game-card">
+                    <div class="game-header">
+                        <span>Volgende Wedstrijd</span>
+                        <span>${nextGame.round || 'Poulefase'}</span>
+                    </div>
+                    <div class="game-main">
+                        <div class="game-team">
+                            <span class="game-team-name">${nextGame.home?.land || 'TBC'}</span>
+                        </div>
+                        <div class="game-vs">VS</div>
+                        <div class="game-team">
+                            <span class="game-team-name">${nextGame.away?.land || 'TBC'}</span>
+                        </div>
+                    </div>
+                    <div class="game-footer">
+                        <div>📅 ${date}</div>
+                        <div id="countdown-timer" class="game-countdown"></div>
+                    </div>
+                </div>
+            `;
+            startCountdown(nextGame.datum_tijd);
+        }
     }
 
-    const date = new Date(nextGame.datum_tijd).toLocaleString('nl-NL', {
-        weekday: 'long', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
-    });
-
-    container.innerHTML = `
-        <div class="game-card">
-            <div class="game-header">
-                <span>Volgende Wedstrijd</span>
-                <span>${nextGame.round || 'Poulefase'}</span>
-            </div>
-            <div class="game-main">
-                <div class="game-team">
-                    <span class="game-team-name">${nextGame.home?.land || 'TBC'}</span>
+    // 3. Render Announcement
+    const annPreview = document.getElementById('latest-announcement-preview');
+    if (annPreview) {
+        if (!data.announcement) {
+            annPreview.style.display = 'none';
+        } else {
+            annPreview.style.display = 'block';
+            annPreview.innerHTML = `
+                <div style="background: white; border-radius: 30px; padding: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border: 2px solid var(--primary);">
+                    <span style="font-size: 0.9rem; color: #888; text-transform: uppercase; letter-spacing: 2px;">Laatste Aankondiging</span>
+                    <h2 style="color: var(--primary); margin: 15px 0; font-family: Outfit, sans-serif; font-weight: 900; font-size: 2.5rem;">${data.announcement.titel}</h2>
+                    <p style="font-size: 1.2rem; color: #444; margin-bottom: 20px; line-height: 1.5; max-height: 120px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">${data.announcement.inhoud}</p>
+                    <a href="aankondigingen.html" style="color: #0055ff; font-weight: 800; text-decoration: none; border-bottom: 2px solid #0055ff;">Lees meer...</a>
                 </div>
-                <div class="game-vs">VS</div>
-                <div class="game-team">
-                    <span class="game-team-name">${nextGame.away?.land || 'TBC'}</span>
-                </div>
-            </div>
-            <div class="game-footer">
-                <div>📅 ${date}</div>
-                <div id="countdown-timer" class="game-countdown"></div>
-            </div>
-        </div>
-    `;
-
-    startCountdown(nextGame.datum_tijd);
+            `;
+        }
+    }
 }
 
 function startCountdown(targetDate) {
@@ -143,51 +165,18 @@ function startCountdown(targetDate) {
     update();
 }
 
-async function initLatestAnnouncement() {
-    const preview = document.getElementById('latest-announcement-preview');
-    if (!preview) return;
-
+async function init() {
     try {
-        await ensureClient();
-        const { data, error } = await supabase
-            .from('aankondigingen')
-            .select('*')
-            .eq('is_active', true)
-            .order('datum_tijd', { ascending: false })
-            .limit(1);
-
-        if (error) throw error;
-
-        if (!data || data.length === 0) {
-            preview.style.display = 'none';
-            return;
-        }
-
-        const ann = data[0];
-        preview.style.display = 'block';
-        preview.innerHTML = `
-            <div style="background: white; border-radius: 30px; padding: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border: 2px solid var(--primary);">
-                <span style="font-size: 0.9rem; color: #888; text-transform: uppercase; letter-spacing: 2px;">Laatste Aankondiging</span>
-                <h2 style="color: var(--primary); margin: 15px 0; font-family: Outfit, sans-serif; font-weight: 900; font-size: 2.5rem;">${ann.titel}</h2>
-                <p style="font-size: 1.2rem; color: #444; margin-bottom: 20px; line-height: 1.5; max-height: 120px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">${ann.inhoud}</p>
-                <a href="aankondigingen.html" style="color: #0055ff; font-weight: 800; text-decoration: none; border-bottom: 2px solid #0055ff;">Lees meer...</a>
-            </div>
-        `;
+        const data = await loadHomeData();
+        renderHome(data);
     } catch (err) {
-        console.error("Error loading latest announcement:", err);
+        console.error("Home initialization failed:", err);
     }
-}
-
-function init() {
-    initPodium();
-    initNextGame();
-    initLatestAnnouncement();
 
     // Refresh periodically or on update
-    subscribeToUpdates(() => {
-        initPodium();
-        initNextGame();
-        initLatestAnnouncement();
+    subscribeToUpdates(async () => {
+        const data = await loadHomeData();
+        renderHome(data);
     });
 }
 
